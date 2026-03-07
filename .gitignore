@@ -1,0 +1,12 @@
+# ឯកសារសម្ងាត់ដែលមិនត្រូវដាក់លើ GitHub
+serviceAccountKey.json
+
+# ឯកសារ Database
+tasks.db
+
+# ឯកសារដែល Python បង្កើតឡើងដោយស្វ័យប្រវត្តិ
+__pycache__/
+*.pyc
+
+# ឯកសារកំណត់ផ្សេងៗ
+.env
