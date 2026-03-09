@@ -70,37 +70,39 @@
         const list = document.getElementById('project-list');
         list.innerHTML = '';
         
-   for (const p of data.projects) {
-            // 1. ទាញយក Task សម្រាប់ Project នីមួយៗសិន
+        for (const p of data.projects) {
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
             const taskData = await taskRes.json();
             
-            // 2. បង្កើតអថេរ taskRows ឱ្យបានមុនពេលយកទៅប្រើក្នុង innerHTML
             let taskRows = '';
             if (taskData.tasks && taskData.tasks.length > 0) {
-                taskRows = taskData.tasks.map(t => 
-                    `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`
-                ).join('');
+                taskRows = taskData.tasks.map(t => `
+                    <tr>
+                        <td>${t.no || ''}</td>
+                        <td>${t.description || ''}</td>
+                        <td>${t.status || ''}</td>
+                        <td>${t.date_submit || ''}</td>
+                        <td>${t.note || ''}</td>
+                    </tr>
+                `).join('');
             } else {
-                taskRows = '<tr><td colspan="3">មិនមាន Task</td></tr>';
+                taskRows = '<tr><td colspan="5">មិនមាន Task</td></tr>';
             }
 
-            // 3. បង្កើត Card
             const card = document.createElement('div');
             card.className = 'project-card';
             card.dataset.projectId = p.id; 
+            card.onclick = function() { openProject(this.dataset.projectId); };
 
-            // បន្ថែម Event Listener
-            card.onclick = function() {
-                openProject(this.dataset.projectId);
-            };
-
-            // 4. បញ្ចូលមាតិកា
             card.innerHTML = `
                 <h3>Project: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                <table style="pointer-events: none;"> 
-                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+                <table style="pointer-events: none; font-size: 12px;"> 
+                    <thead>
+                        <tr>
+                            <th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th>
+                        </tr>
+                    </thead>
                     <tbody>${taskRows}</tbody>
                 </table>
             `;
