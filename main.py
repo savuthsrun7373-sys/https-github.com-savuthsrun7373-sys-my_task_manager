@@ -47,14 +47,15 @@ def get_projects():
 # ត្រូវប្រាកដថា Field ឈ្មោះ date_project ត្រូវបានរក្សាទុកក្នុង Firestore
     @app.post("/tasks")
     def add_task(task: dict = Body(...)):
-        # បន្ថែមការ Print ដើម្បីពិនិត្យក្នុង Server Logs
-        print(f"Adding task: {task}") 
+        # ប្រើ print() ដើម្បីមើលក្នុង Console នៃ Render ថាតើវាទទួលបានអ្វី
+        print(f"ទិន្នន័យដែលទទួលបាន: {task}") 
+        
         db.collection("tasks").add({
             "project_id": task.get('project_id'),
             "no": task.get('no'),
             "description": task.get('description'),
             "status": task.get('status'),
-            "date_project": task.get('date_project'), # ត្រូវប្រាកដថាមានតម្លៃ
+            "date_project": task.get('date_project'), // ត្រូវដូចនឹង Key ក្នុង payload
             "note": task.get('note')
         })
         return {"message": "Task added"}

@@ -161,12 +161,13 @@
     // បន្ថែម Task
     document.getElementById('task-form').onsubmit = async (e) => {
         e.preventDefault();
+        // កែសម្រួលចំណុចនេះក្នុង index.html
         const payload = {
             project_id: activeProjectId,
             no: document.getElementById('no').value,
             description: document.getElementById('description').value,
             status: document.getElementById('status').value,
-            date_project: document.getElementById('date_project').value,
+            date_project: document.getElementById('date_project').value, // ត្រូវប្រាកដថា ID នេះមានក្នុង HTML
             note: document.getElementById('note').value
         };
         await fetch('/tasks', { 
