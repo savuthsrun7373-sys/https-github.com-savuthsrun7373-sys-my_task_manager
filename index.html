@@ -27,7 +27,7 @@
 <div class="container">
     <div id="project-view">
         <h2>បញ្ជី Project</h2>
-        <button onclick="toggleProjectForm()">បង្កើត Project ថ្មី</button>
+        <button onclick="toggleProjectForm()">New_Project</button>
         <div id="project-form-container" style="display: none; margin-top: 10px;">
             <input type="text" id="new_project_id" placeholder="Project ID">
             <input type="date" id="new_project_date">
@@ -74,17 +74,22 @@
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
             const taskData = await taskRes.json();
             
+            // ក្នុង loop នៃ loadProjects
             let taskRows = '';
             if (taskData.tasks && taskData.tasks.length > 0) {
-                taskRows = taskData.tasks.map(t => `
-                    <tr>
+                taskRows = taskData.tasks.map(t => {
+                    // កែសម្រួល Date៖ ពិនិត្យមើលថាតើ date_submit មានទិន្នន័យឬអត់
+                    const dateObj = t.date_submit ? new Date(t.date_submit) : null;
+                    const formattedDate = dateObj ? dateObj.toLocaleDateString('km-KH') : 'N/A';
+                    
+                    return `<tr>
                         <td>${t.no || ''}</td>
                         <td>${t.description || ''}</td>
                         <td>${t.status || ''}</td>
-                        <td>${t.date_submit || ''}</td>
+                        <td>${formattedDate}</td>
                         <td>${t.note || ''}</td>
-                    </tr>
-                `).join('');
+                    </tr>`;
+                }).join('');
             } else {
                 taskRows = '<tr><td colspan="5">មិនមាន Task</td></tr>';
             }
@@ -95,7 +100,7 @@
             card.onclick = function() { openProject(this.dataset.projectId); };
 
             card.innerHTML = `
-                <h3>Project: ${p.id}</h3>
+                <h3>Sub: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
                 <table style="pointer-events: none; font-size: 12px;"> 
                     <thead>
