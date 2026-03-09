@@ -59,8 +59,10 @@ def add_task(task: dict = Body(...)):
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
     tasks = []
-    # ទាញយក Task តាម project_id ដែលបានជ្រើសរើស
+    # ស្វែងរកតាម project_id
     docs = db.collection("tasks").where("project_id", "==", project_id).stream()
     for doc in docs:
         tasks.append(doc.to_dict())
+    
+    # ត្រូវប្រាកដថាត្រឡប់ជា Dictionary ដែលមាន Key "tasks"
     return {"tasks": tasks}

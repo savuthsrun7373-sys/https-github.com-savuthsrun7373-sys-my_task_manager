@@ -87,11 +87,22 @@
         
         const res = await fetch(`/tasks?project_id=${id}`);
         const data = await res.json();
+        
         const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = '';
-        data.tasks.forEach(t => {
-            tbody.innerHTML += `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`;
-        });
+        
+        // បញ្ជាក់៖ data.tasks គឺជា Array ដែលត្រឡប់មកពី Python
+        if (data.tasks && data.tasks.length > 0) {
+            data.tasks.forEach(t => {
+                tbody.innerHTML += `<tr>
+                    <td>${t.no}</td>
+                    <td>${t.description}</td>
+                    <td>${t.status}</td>
+                </tr>`;
+            });
+        } else {
+            tbody.innerHTML = '<tr><td colspan="3">មិនមានទិន្នន័យ</td></tr>';
+        }
     }
 
     // បន្ថែម Task
