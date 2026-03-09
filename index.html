@@ -69,13 +69,30 @@
         const data = await res.json();
         const list = document.getElementById('project-list');
         list.innerHTML = '';
-        data.projects.forEach(p => {
+        
+        for (const p of data.projects) {
+            // ទាញយក Task សម្រាប់ Project នីមួយៗ
+            const taskRes = await fetch(`/tasks?project_id=${p.id}`);
+            const taskData = await taskRes.json();
+            
             const card = document.createElement('div');
             card.className = 'project-card';
-            card.innerHTML = `<h3>${p.id}</h3><p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>`;
-            card.onclick = () => openProject(p.id);
+            
+            // បង្កើតតារាង Task សម្រាប់ដាក់ក្នុង Card
+            let taskRows = taskData.tasks.map(t => 
+                `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`
+            ).join('');
+
+            card.innerHTML = `
+                <h3>Project: ${p.id}</h3>
+                <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                <table>
+                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+                    <tbody>${taskRows || '<tr><td colspan="3">មិនមាន Task</td></tr>'}</tbody>
+                </table>
+            `;
             list.appendChild(card);
-        });
+        }
     }
 
     // បើក Project View
