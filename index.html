@@ -54,7 +54,11 @@
         </form>
 
         <table>
-            <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+            <thead>
+                <tr>
+                    <th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th>
+                </tr>
+            </thead>
             <tbody id="task-table-body"></tbody>
         </table>
     </div>
@@ -123,32 +127,34 @@
     }
 
     // បើក Project View
+    // កែសម្រួលផ្នែក openProject ក្នុង index.html
     async function openProject(id) {
         activeProjectId = id;
         document.getElementById('project-view').style.display = 'none';
         document.getElementById('task-view').style.display = 'block';
-        document.getElementById('current-project-title').innerText = "Project: " + id;
+        document.getElementById('current-project-title').innerText = "Sub: " + id; // ដូរពី Project ទៅ Sub
         
         const res = await fetch(`/tasks?project_id=${id}`);
         const data = await res.json();
         
         const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = ''; // លុបមាតិកាចាស់ចេញ
+        tbody.innerHTML = ''; 
 
-        // យក Array ពី Key ឈ្មោះ "tasks" ដែលអ្នកបានផ្ញើមក
         const taskList = data.tasks; 
 
         if (taskList && taskList.length > 0) {
             taskList.forEach(t => {
-                // ប្រើឈ្មោះ Field ឱ្យត្រូវនឹង JSON ដែលផ្ញើមក (no, description, status)
+                // បន្ថែម date_project និង note នៅទីនេះ
                 tbody.innerHTML += `<tr>
                     <td>${t.no || ''}</td>
                     <td>${t.description || ''}</td>
                     <td>${t.status || ''}</td>
+                    <td>${t.date_project || ''}</td>
+                    <td>${t.note || ''}</td>
                 </tr>`;
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="3">មិនមានទិន្នន័យការងារទេ</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5">មិនមានទិន្នន័យការងារទេ</td></tr>';
         }
     }
 
