@@ -109,14 +109,20 @@
     async function fetchTasks(projectId) {
         const response = await fetch(`/tasks?project_id=${encodeURIComponent(projectId)}`);
         const data = await response.json();
-        console.log("Data received for Project:", projectId, data); // បន្ថែមបន្ទាត់នេះដើម្បី Check មើលក្នុង Console
-
+        
         const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = ''; 
         
         if (data.tasks && data.tasks.length > 0) {
             data.tasks.forEach(t => {
-                // ... បង្ហាញជួរដេក ...
+                const row = `<tr>
+                    <td>${t.no || ''}</td>
+                    <td>${t.description || ''}</td>
+                    <td>${t.status || ''}</td>
+                    <td>${t.date_submit || ''}</td>
+                    <td>${t.note || ''}</td>
+                </tr>`;
+                tbody.innerHTML += row;
             });
         } else {
             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">មិនទាន់មានការងារនៅឡើយ</td></tr>';

@@ -45,24 +45,28 @@ def get_projects():
         projects.append(doc.to_dict())
     return {"projects": projects}
 
+from fastapi import FastAPI, Query, Body
+# ... (import ផ្សេងៗដដែល) ...
+
 @app.post("/tasks")
-def add_task(task: dict):
-    # បន្ថែម Task ចូលទៅក្នុង Collection "tasks"
+def add_task(task: dict = Body(...)):
+    # ធានាថា project_id ត្រូវបានរក្សាទុកត្រឹមត្រូវ
     db.collection("tasks").add({
-        "project_id": task['project_id'],
-        "no": task['no'],
-        "description": task['description'],
-        "status": task['status'],
-        "date_submit": task['date_submit'],
-        "note": task['note']
+        "project_id": task.get('project_id'),
+        "no": task.get('no'),
+        "description": task.get('description'),
+        "status": task.get('status'),
+        "date_submit": task.get('date_submit'),
+        "note": task.get('note')
     })
     return {"message": "Task added"}
 
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
-    # ទាញយក Task តាម project_id
+    # ទាញយកតែ Tasks ដែលមាន project_id ស្មើនឹងអ្វីដែលយើងកំពុងមើល
     tasks = []
     docs = db.collection("tasks").where("project_id", "==", project_id).stream()
     for doc in docs:
-        tasks.append(doc.to_dict())
+        t = doc.to_dict()
+        tasks.append(t)
     return {"tasks": tasks}
