@@ -7,39 +7,31 @@ from firebase_admin import credentials, initialize_app, firestore
 
 app = FastAPI()
 
-# ១. ការកំណត់រចនាសម្ព័ន្ធ Firebase
+# 1. ការតភ្ជាប់ Firebase
 firebase_config_str = os.getenv("FIREBASE_SERVICE_ACCOUNT")
 if firebase_config_str:
-    # សម្រាប់ប្រើលើ Render (អានពី Environment Variable)
     cred = credentials.Certificate(json.loads(firebase_config_str))
     initialize_app(cred)
 else:
-    # សម្រាប់ប្រើលើកុំព្យូទ័រផ្ទាល់ខ្លួន
+    # សម្រាប់អភិវឌ្ឍន៍លើកុំព្យូទ័រផ្ទាល់ខ្លួន
     cred = credentials.Certificate("serviceAccountKey.json")
     initialize_app(cred)
 
 db = firestore.client()
 
-# ២. ការកំណត់ Middleware
-app.add_middleware(
-    CORSMiddleware, 
-    allow_origins=["*"], 
-    allow_methods=["*"], 
-    allow_headers=["*"]
-)
-
-# --- ផ្នែក Routes ---
+# 2. បើកការអនុញ្ញាតឱ្យចូលប្រើ (CORS)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
 
 @app.get("/")
 async def read_index():
     return FileResponse("index.html")
 
-# គ្រប់គ្រង Projects
+# 3. មុខងារសម្រាប់ Project
 @app.post("/projects")
 def add_project(data: dict):
     db.collection("projects").document(data['id']).set({
         "id": data['id'],
-        "date_project": data['date']
+        "date": data['date']
     })
     return {"message": "Project created"}
 
@@ -51,10 +43,9 @@ def get_projects():
         projects.append(doc.to_dict())
     return {"projects": projects}
 
-# គ្រប់គ្រង Tasks
+# 4. មុខងារសម្រាប់ Task
 @app.post("/tasks")
 def add_task(task: dict = Body(...)):
-    # រក្សាទុក Task ដោយភ្ជាប់ជាមួយ project_id
     db.collection("tasks").add({
         "project_id": task.get('project_id'),
         "no": task.get('no'),
@@ -67,19 +58,9 @@ def add_task(task: dict = Body(...)):
 
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
-    """
-    ទាញយកបញ្ជី Tasks តាមរយៈ project_id
-    """
     tasks = []
-    try:
-        # ស្វែងរកតែ Tasks ណាដែលមាន project_id ដូចអ្វីដែលបានផ្ញើមក
-        docs = db.collection("tasks").where("project_id", "==", project_id).stream()
-        
-        for doc in docs:
-            task_data = doc.to_dict()
-            task_data["id"] = doc.id  # បន្ថែម ID របស់ Document ងាយស្រួលគ្រប់គ្រង
-            tasks.append(task_data)
-            
-        return {"tasks": tasks}
-    except Exception as e:
-        return {"error": str(e), "tasks": []}
+    # ទាញយក Task តាម project_id ដែលបានជ្រើសរើស
+    docs = db.collection("tasks").where("project_id", "==", project_id).stream()
+    for doc in docs:
+        tasks.append(doc.to_dict())
+    return {"tasks": tasks}
