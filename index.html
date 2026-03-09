@@ -70,25 +70,38 @@
         const list = document.getElementById('project-list');
         list.innerHTML = '';
         
-        for (const p of data.projects) {
-            // ទាញយក Task សម្រាប់ Project នីមួយៗ
+   for (const p of data.projects) {
+            // 1. ទាញយក Task សម្រាប់ Project នីមួយៗសិន
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
             const taskData = await taskRes.json();
             
+            // 2. បង្កើតអថេរ taskRows ឱ្យបានមុនពេលយកទៅប្រើក្នុង innerHTML
+            let taskRows = '';
+            if (taskData.tasks && taskData.tasks.length > 0) {
+                taskRows = taskData.tasks.map(t => 
+                    `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`
+                ).join('');
+            } else {
+                taskRows = '<tr><td colspan="3">មិនមាន Task</td></tr>';
+            }
+
+            // 3. បង្កើត Card
             const card = document.createElement('div');
             card.className = 'project-card';
-            
-            // បង្កើតតារាង Task សម្រាប់ដាក់ក្នុង Card
-            let taskRows = taskData.tasks.map(t => 
-                `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`
-            ).join('');
+            card.dataset.projectId = p.id; 
 
+            // បន្ថែម Event Listener
+            card.onclick = function() {
+                openProject(this.dataset.projectId);
+            };
+
+            // 4. បញ្ចូលមាតិកា
             card.innerHTML = `
                 <h3>Project: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                <table>
+                <table style="pointer-events: none;"> 
                     <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
-                    <tbody>${taskRows || '<tr><td colspan="3">មិនមាន Task</td></tr>'}</tbody>
+                    <tbody>${taskRows}</tbody>
                 </table>
             `;
             list.appendChild(card);
