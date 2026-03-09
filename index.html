@@ -89,19 +89,22 @@
         const data = await res.json();
         
         const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = '';
-        
-        // បញ្ជាក់៖ data.tasks គឺជា Array ដែលត្រឡប់មកពី Python
-        if (data.tasks && data.tasks.length > 0) {
-            data.tasks.forEach(t => {
+        tbody.innerHTML = ''; // លុបមាតិកាចាស់ចេញ
+
+        // យក Array ពី Key ឈ្មោះ "tasks" ដែលអ្នកបានផ្ញើមក
+        const taskList = data.tasks; 
+
+        if (taskList && taskList.length > 0) {
+            taskList.forEach(t => {
+                // ប្រើឈ្មោះ Field ឱ្យត្រូវនឹង JSON ដែលផ្ញើមក (no, description, status)
                 tbody.innerHTML += `<tr>
-                    <td>${t.no}</td>
-                    <td>${t.description}</td>
-                    <td>${t.status}</td>
+                    <td>${t.no || ''}</td>
+                    <td>${t.description || ''}</td>
+                    <td>${t.status || ''}</td>
                 </tr>`;
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="3">មិនមានទិន្នន័យ</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="3">មិនមានទិន្នន័យការងារទេ</td></tr>';
         }
     }
 
