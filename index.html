@@ -48,7 +48,7 @@
                 <option value="Processing">Processing</option>
                 <option value="Done">Done</option>
             </select>
-            <input type="date" id="date_submit" required>
+            <input type="date" id="date_project" required>
             <input type="text" id="note" placeholder="Note">
             <button type="submit">បន្ថែមការងារ</button>
         </form>
@@ -79,8 +79,8 @@
             if (taskData.tasks && taskData.tasks.length > 0) {
                 // កែសម្រួលនៅក្នុង loop នៃ loadProjects ក្នុង index.html
                 taskRows = taskData.tasks.map(t => {
-                    // ពិនិត្យមើលតម្លៃ date_submit ដែលមកពី Backend
-                    let displayDate = t.date_submit ? t.date_submit : 'N/A';
+                    // ពិនិត្យមើលតម្លៃ date_project ដែលមកពី Backend
+                    let displayDate = t.date_project ? t.date_project : 'N/A';
                     
                     // បើសិនជាទម្រង់ YYYY-MM-DD ចង់ប្តូរជា DD-MM-YYYY
                     if (displayDate !== 'N/A' && displayDate.includes('-')) {
@@ -160,7 +160,7 @@
             no: document.getElementById('no').value,
             description: document.getElementById('description').value,
             status: document.getElementById('status').value,
-            date_submit: document.getElementById('date_submit').value,
+            date_project: document.getElementById('date_project').value,
             note: document.getElementById('note').value
         };
         await fetch('/tasks', { 
