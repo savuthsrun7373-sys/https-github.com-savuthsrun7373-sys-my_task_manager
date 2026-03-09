@@ -105,13 +105,14 @@
         });
     }
 
-    /// ៣. ហៅទិន្នន័យ Tasks
+    /// ហៅទិន្នន័យ Tasks តាម Project ID
     async function fetchTasks(projectId) {
+        // ហៅទៅកាន់ API ដោយបញ្ជូន project_id ទៅជាមួយ
         const response = await fetch(`/tasks?project_id=${encodeURIComponent(projectId)}`);
         const data = await response.json();
         
         const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = ''; 
+        tbody.innerHTML = ''; // លាងសម្អាតតារាងចាស់ចេញ
         
         if (data.tasks && data.tasks.length > 0) {
             data.tasks.forEach(t => {
@@ -125,7 +126,7 @@
                 tbody.innerHTML += row;
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">មិនទាន់មានការងារនៅឡើយ</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">មិនទាន់មានការងារសម្រាប់ Project នេះទេ</td></tr>';
         }
     }
 
@@ -176,6 +177,5 @@
 
     window.onload = loadProjects;
 </script>
-
 </body>
 </html>
