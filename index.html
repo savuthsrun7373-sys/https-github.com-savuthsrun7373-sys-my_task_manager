@@ -15,11 +15,30 @@
         td { padding: 10px; border: 1px solid #ddd; }
 
         /* បន្ថែម CSS ថ្មីសម្រាប់ Grid នៅទីនេះ */
+        /* បង្កើនភាពបត់បែនសម្រាប់ Grid */
         #project-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            /* ប្រើ grid-template-columns ដើម្បីឱ្យវាស្វ័យប្រវត្តិ៖ 
+            - នៅលើកុំព្យូទ័រ៖ បង្ហាញច្រើនជួរ
+            - នៅលើទូរសព្ទ (តូចជាង 600px)៖ បង្ហាញ ១ ជួរពេញ 
+            */
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 15px;
             margin-top: 20px;
+        }
+
+        /* បន្ថែម Media Query សម្រាប់ទូរសព្ទដៃ */
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+                width: 95%;
+            }
+            #project-list {
+                grid-template-columns: 1fr; /* បង្ខំឱ្យបង្ហាញ ១ ជួរតែមួយនៅលើអេក្រង់តូច */
+            }
+            .project-card {
+                padding: 10px;
+            }
         }
         .project-card {
             background: #fff;
