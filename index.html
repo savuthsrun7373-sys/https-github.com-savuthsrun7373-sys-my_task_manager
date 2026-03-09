@@ -77,19 +77,26 @@
             // ក្នុង loop នៃ loadProjects
             let taskRows = '';
             if (taskData.tasks && taskData.tasks.length > 0) {
+                // កែសម្រួលនៅក្នុង loop នៃ loadProjects ក្នុង index.html
                 taskRows = taskData.tasks.map(t => {
-                    // កែសម្រួល Date៖ ពិនិត្យមើលថាតើ date_submit មានទិន្នន័យឬអត់
-                    const dateObj = t.date_submit ? new Date(t.date_submit) : null;
-                    const formattedDate = dateObj ? dateObj.toLocaleDateString('km-KH') : 'N/A';
+                    // ពិនិត្យមើលតម្លៃ date_submit ដែលមកពី Backend
+                    let displayDate = t.date_submit ? t.date_submit : 'N/A';
                     
+                    // បើសិនជាទម្រង់ YYYY-MM-DD ចង់ប្តូរជា DD-MM-YYYY
+                    if (displayDate !== 'N/A' && displayDate.includes('-')) {
+                        const p = displayDate.split('-');
+                        if (p.length === 3) displayDate = `${p[2]}-${p[1]}-${p[0]}`;
+                    }
+
                     return `<tr>
                         <td>${t.no || ''}</td>
                         <td>${t.description || ''}</td>
                         <td>${t.status || ''}</td>
-                        <td>${formattedDate}</td>
+                        <td>${displayDate}</td>
                         <td>${t.note || ''}</td>
                     </tr>`;
                 }).join('');
+
             } else {
                 taskRows = '<tr><td colspan="5">មិនមាន Task</td></tr>';
             }

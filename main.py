@@ -44,17 +44,20 @@ def get_projects():
     return {"projects": projects}
 
 # 4. មុខងារសម្រាប់ Task
-@app.post("/tasks")
-def add_task(task: dict = Body(...)):
-    db.collection("tasks").add({
-        "project_id": task.get('project_id'),
-        "no": task.get('no'),
-        "description": task.get('description'),
-        "status": task.get('status'),
-        "date_submit": task.get('date_submit'),
-        "note": task.get('note')
-    })
-    return {"message": "Task added"}
+# ត្រូវប្រាកដថា Field ឈ្មោះ date_submit ត្រូវបានរក្សាទុកក្នុង Firestore
+    @app.post("/tasks")
+    def add_task(task: dict = Body(...)):
+        # បន្ថែមការ Print ដើម្បីពិនិត្យក្នុង Server Logs
+        print(f"Adding task: {task}") 
+        db.collection("tasks").add({
+            "project_id": task.get('project_id'),
+            "no": task.get('no'),
+            "description": task.get('description'),
+            "status": task.get('status'),
+            "date_submit": task.get('date_submit'), # ត្រូវប្រាកដថាមានតម្លៃ
+            "note": task.get('note')
+        })
+        return {"message": "Task added"}
 
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
