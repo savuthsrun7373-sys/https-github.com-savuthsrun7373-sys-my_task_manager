@@ -39,7 +39,7 @@ def add_task(task: dict = Body(...)):
         "no": task.get('no'),
         "description": task.get('description'),
         "status": task.get('status'),
-        "date_project": task.get('date_project'),
+        "date": task.get('date'),
         "note": task.get('note')
     })
     return {"message": "Task added"}
