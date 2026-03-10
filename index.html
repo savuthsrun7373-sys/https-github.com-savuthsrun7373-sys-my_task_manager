@@ -64,16 +64,30 @@
     let currentTasks = [];
 
     async function loadProjects() {
-        const res = await fetch('/get_projects');
-        const data = await res.json();
-        const list = document.getElementById('project-list');
-        list.innerHTML = '';
-        for (const p of data.projects) {
-            const card = document.createElement('div');
-            card.className = 'project-card';
-            card.onclick = () => openProject(p.id);
-            card.innerHTML = `<h3>Sub: ${p.id}</h3><p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>`;
-            list.appendChild(card);
+        try {
+            const res = await fetch('/get_projects');
+            const data = await res.json();
+            const list = document.getElementById('project-list');
+            list.innerHTML = ''; // លុបកន្លែងចាស់ចោលមុនពេល Render ថ្មី
+            
+            // ពិនិត្យមើលថា data.projects មានទិន្នន័យមែនទេ
+            if (data.projects && data.projects.length > 0) {
+                for (const p of data.projects) {
+                    const card = document.createElement('div');
+                    card.className = 'project-card';
+                    card.onclick = () => openProject(p.id);
+                    // បង្ហាញឈ្មោះ Project និងកាលបរិច្ឆេទ
+                    card.innerHTML = `
+                        <h3>Sub: ${p.id || 'Unknown'}</h3>
+                        <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                    `;
+                    list.appendChild(card);
+                }
+            } else {
+                list.innerHTML = '<p>មិនមាន Project ក្នុងប្រព័ន្ធទេ។</p>';
+            }
+        } catch (error) {
+            console.error("Error loading projects:", error);
         }
     }
 
