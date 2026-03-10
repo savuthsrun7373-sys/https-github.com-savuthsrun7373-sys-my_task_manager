@@ -1,169 +1,405 @@
-<!DOCTYPE html>
-<html lang="km">
-<head>
-    <meta charset="UTF-8">
-    <title>ប្រព័ន្ធតាមដានការងារ</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 800px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* តារាងមេ (Task View) */
-        .task-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
-        .task-table th, .task-table td { padding: 8px; border: 1px solid #ddd; word-wrap: break-word; }
-        .task-table th { background-color: #2980b9; color: white; }
-        
-        /* កំណត់ទំហំ Column ជាក់លាក់សម្រាប់តារាងមេ */
-        .task-table th:nth-child(1), .task-table td:nth-child(1) { width: 40px; text-align: center; } /* No */
-        .task-table th:nth-child(3), .task-table td:nth-child(3) { width: 90px; } /* Status */
-        .task-table th:nth-child(4), .task-table td:nth-child(4) { width: 100px; } /* Date */
-        .task-table th:nth-child(6), .task-table td:nth-child(6) { width: 80px; } /* Action */
-        .task-table th:nth-child(2), .task-table td:nth-child(2) { width: auto; } /* Desc (យកសល់ទាំងអស់) */
 
-        /* តារាងក្នុង Card */
-        .project-card table { width: 100%; font-size: 11px; table-layout: fixed; pointer-events: none; }
-        .project-card td { border: 1px solid #ddd; padding: 4px; }
-        
-        input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; margin-bottom: 10px; }
+<!DOCTYPE html>
+
+<html lang="km">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>ប្រព័ន្ធតាមដានការងារ</title>
+
+
+
+    <style>
+
+        /* រចនាប័ទ្មមូលដ្ឋាន */
+
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+
+        .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+        #project-list { display: grid; gap: 10px; margin-top: 20px; }
+
+        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+
+       
+
+        /* ការកំណត់តារាង - រៀបចំឱ្យមានរបៀប */
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
+
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
+
+        th { background-color: #2980b9; color: white; }
+
+       
+
+        /* ការកំណត់ Column ជាក់លាក់ */
+
+        /* No */
+
+        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
+
+        /* Status */
+
+        th:nth-child(3), td:nth-child(3) { width: 90px; }
+
+        /* Desc (សល់ប៉ុន្មានគឺយកទាំងអស់) */
+
+        th:nth-child(2), td:nth-child(2) { width: auto; }
+
+       
+
+        /* ធាតុ Form និងប៊ូតុង */
+
+        input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+
+        button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
+
+       
+
+        /* ការកំណត់សម្រាប់ Project List Cards */
+
+        /* កំណត់ទំហំសម្រាប់តែតារាងដែលស្ថិតនៅក្នុង .project-card ប៉ុណ្ណោះ */
+        .project-card table {
+            width: 100%;
+            table-layout: fixed; /* ជួយឱ្យវាបែងចែកទំហំតាមការកំណត់ */
+        }
+
+        .project-card table th:nth-child(1), 
+        .project-card table td:nth-child(1) { 
+            width: 30px; /* No */
+        }
+
+        .project-card table th:nth-child(2), 
+        .project-card table td:nth-child(2) { 
+            width: auto; /* Desc - នឹងយកទំហំដែលសល់ទាំងអស់ */
+        }
+
+        .project-card table th:nth-child(3), 
+        .project-card table td:nth-child(3) { 
+            width: 70px; /* Status */
+        }
+
     </style>
+
+   
+
 </head>
+
 <body>
 
+
+
 <div class="container">
+
     <div id="project-view">
+
         <h2>បញ្ជី Project</h2>
+
+        <button onclick="toggleProjectForm()">New_Project</button>
+
+        <div id="project-form-container" style="display: none; margin-top: 10px;">
+
+            <input type="text" id="new_project_id" placeholder="Project ID">
+
+            <input type="date" id="new_project_date">
+
+            <button onclick="createProject()">រក្សាទុក</button>
+
+        </div>
+
         <div id="project-list"></div>
+
     </div>
+
+
 
     <div id="task-view" style="display:none;">
+
         <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
+
         <h2 id="current-project-title"></h2>
-        <table class="task-table">
+
+        <table>
+
             <thead>
+
                 <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
+
             </thead>
+
             <tbody id="task-table-body"></tbody>
+
+            <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
+
+                <td><input type="text" id="new-no"></td>
+
+                <td><input type="text" id="new-description"></td>
+
+                <td>
+
+                    <select id="new-status">
+
+                        <option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Done">Done</option>
+
+                    </select>
+
+                </td>
+
+                <td><input type="date" id="new-date"></td>
+
+                <td><input type="text" id="new-note"></td>
+
+            </tr>
+
         </table>
+
         <button onclick="toggleNewRow()" id="plus-btn">+</button>
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60; color:white;">Save/Update</button>
+
+        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save/Update</button>
+
     </div>
+
 </div>
 
+
+
 <script>
+
     let activeProjectId = '';
+
     let currentTasks = [];
 
+
+
    async function loadProjects() {
+
         const res = await fetch('/get_projects');
+
         const data = await res.json();
+
         const list = document.getElementById('project-list');
+
         list.innerHTML = '';
-        
+
+       
+
         for (const p of data.projects) {
+
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
+
             const taskData = await taskRes.json();
-            
+
+           
+
             // ធ្វើការ Sort នៅទីនេះមុនពេលបង្ហាញ
+
             let tasks = taskData.tasks || [];
+
             tasks.sort((a, b) => {
+
                 // ១. យក "Done" ទៅលើគេ
+
                 if (a.status === 'Done' && b.status !== 'Done') return -1;
+
                 if (a.status !== 'Done' && b.status === 'Done') return 1;
+
                 // ២. បន្ទាប់មកតម្រៀបតាមលេខរៀង (No) ពីតូចទៅធំ
+
                 return parseInt(a.no) - parseInt(b.no);
+
             });
-            
+
+           
+
             const card = document.createElement('div');
+
             card.className = 'project-card';
+
             card.onclick = () => openProject(p.id);
-            
+
+           
+
             card.innerHTML = `
+
                 <h3>Sub: ${p.id}</h3>
+
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+
                 <table style="pointer-events: none; font-size: 11px;">
+
                     <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+
                     <tbody>
+
                         ${tasks.map(t => `
+
                             <tr>
+
                                 <td>${t.no}</td>
+
                                 <td>${t.description.substring(0, 15)}...</td>
+
                                 <td>${t.status}</td>
+
                             </tr>
+
                         `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
+
                     </tbody>
+
                 </table>
+
             `;
+
             list.appendChild(card);
+
         }
+
     }
+
+
 
     async function openProject(id) {
+
         activeProjectId = id;
+
         document.getElementById('project-view').style.display = 'none';
+
         document.getElementById('task-view').style.display = 'block';
+
         document.getElementById('current-project-title').innerText = "Sub: " + id;
-        
+
+       
+
         const res = await fetch(`/tasks?project_id=${id}`);
+
         const data = await res.json();
+
         currentTasks = data.tasks || [];
-        
+
+       
+
         sortAndRender();
+
     }
+
+
 
     function sortAndRender() {
+
         currentTasks.sort((a, b) => {
+
             if (a.status === 'Done' && b.status !== 'Done') return -1;
+
             if (a.status !== 'Done' && b.status === 'Done') return 1;
+
             return parseInt(a.no) - parseInt(b.no);
+
         });
-        
+
+       
+
         const tbody = document.getElementById('task-table-body');
+
         tbody.innerHTML = currentTasks.map(t => `
+
             <tr>
+
                 <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td><td>${t.date}</td><td>${t.note}</td>
+
                 <td><button onclick="editTask('${t.no}')">Edit</button></td>
+
             </tr>
+
         `).join('');
+
     }
+
+
 
     function toggleNewRow() {
+
         document.getElementById('new-task-row').style.display = 'table-row';
+
         document.getElementById('plus-btn').style.display = 'none';
+
         document.getElementById('save-btn').style.display = 'inline';
+
     }
+
+
 
     function editTask(no) {
+
         const task = currentTasks.find(t => t.no === no);
+
         if (!task) return;
+
         toggleNewRow();
+
         document.getElementById('new-no').value = task.no;
+
         document.getElementById('new-description').value = task.description;
+
         document.getElementById('new-status').value = task.status;
+
         document.getElementById('new-date').value = task.date;
+
         document.getElementById('new-note').value = task.note;
+
     }
+
+
 
     async function saveNewTask() {
+
         const payload = {
+
             project_id: activeProjectId,
+
             no: document.getElementById('new-no').value,
+
             description: document.getElementById('new-description').value,
+
             status: document.getElementById('new-status').value,
+
             date: document.getElementById('new-date').value,
+
             note: document.getElementById('new-note').value
+
         };
+
         await fetch('/tasks', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+
         document.getElementById('new-task-row').style.display = 'none';
+
         document.getElementById('save-btn').style.display = 'none';
+
         document.getElementById('plus-btn').style.display = 'inline';
+
         openProject(activeProjectId);
+
     }
 
+
+
     function showProjects() { document.getElementById('project-view').style.display = 'block'; document.getElementById('task-view').style.display = 'none'; }
+
     function toggleProjectForm() { const f = document.getElementById('project-form-container'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
+
     async function createProject() { await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: document.getElementById('new_project_id').value, date: document.getElementById('new_project_date').value}) }); loadProjects(); toggleProjectForm(); }
 
+
+
     window.onload = loadProjects;
+
 </script>
+
 </body>
+
 </html>
