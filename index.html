@@ -1,171 +1,47 @@
 <!DOCTYPE html>
-
-
-
 <html lang="km">
-
-
-
 <head>
-
-
-
     <meta charset="UTF-8">
-
-
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
     <title>ប្រព័ន្ធតាមដានការងារ</title>
-
-
-
-
-
-
-
     <style>
-
-
-
         /* រចនាប័ទ្មមូលដ្ឋាន */
-
-
-
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-
-
-
         .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-
-
-
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
-
-
-
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
 
-
-
-       
-
-
-
-        /* ការកំណត់តារាង - រៀបចំឱ្យមានរបៀប */
-
-
-
+        /* ការកំណត់តារាងទូទៅ */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
-
-
-
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
-
-
-
         th { background-color: #2980b9; color: white; }
 
+        /* តារាង 3 ជួរឈរ (Project List) */
+        .project-card table th:nth-child(1), .project-card table td:nth-child(1) { width: 30px; text-align: center; }
+        .project-card table th:nth-child(3), .project-card table td:nth-child(3) { width: 80px; }
+        .project-card table th:nth-child(2), .project-card table td:nth-child(2) { width: auto; }
 
-
-       
-
-
-
-        /* ការកំណត់ Column ជាក់លាក់ */
-
-
-
-        /* No */
-
-
-
-        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
-
-
-
-        /* Status */
-
-
-
-        th:nth-child(3), td:nth-child(3) { width: 90px; }
-
-
-
-        /* Desc (សល់ប៉ុន្មានគឺយកទាំងអស់) */
-
-
-
-        th:nth-child(2), td:nth-child(2) { width: auto; }
-
-
-
-       
-
-
+        /* តារាង 6 ជួរឈរ (Task View) */
+        #task-view table th:nth-child(1), #task-view table td:nth-child(1) { width: 40px; }
+        #task-view table th:nth-child(3), #task-view table td:nth-child(3) { width: 80px; }
+        #task-view table th:nth-child(4), #task-view table td:nth-child(4) { width: 80px; }
+        #task-view table th:nth-child(5), #task-view table td:nth-child(5) { width: 80px; }
+        #task-view table th:nth-child(6), #task-view table td:nth-child(6) { width: 60px; }
+        #task-view table th:nth-child(2), #task-view table td:nth-child(2) { width: auto; }
 
         /* ធាតុ Form និងប៊ូតុង */
-
-
-
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-
-
-
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
 
-
-
-       
-
-
-
         /* ការកំណត់សម្រាប់ Project List Cards */
-
-
-
         .project-card table { max-height: 150px; display: block; overflow-y: auto; }
-
-
-
     </style>
-
-
-
-   
-
-
-
 </head>
-
-
-
 <body>
-
-
-
-
-
-
-
 <div class="container">
-
-
-
     <div id="project-view">
-
-
-
         <h2>បញ្ជី Project</h2>
-
-
-
         <button onclick="toggleProjectForm()">New_Project</button>
-
-
-
         <div id="project-form-container" style="display: none; margin-top: 10px;">
 
 

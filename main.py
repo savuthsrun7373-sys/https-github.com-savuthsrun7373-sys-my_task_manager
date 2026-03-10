@@ -72,7 +72,3 @@ def update_task(task: dict = Body(...)):
     }, merge=True)
     return {"message": "Task updated"}
 
-@app.delete("/delete_task/{task_id}")
-def delete_task(task_id: str):
-    db.collection("tasks").document(task_id).delete()
-    return {"message": "Deleted"}
