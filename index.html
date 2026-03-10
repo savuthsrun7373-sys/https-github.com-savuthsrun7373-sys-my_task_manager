@@ -4,27 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
+
     <style>
+        /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
         .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
         
-        /* ការកំណត់តារាងទូទៅ */
+        /* ការកំណត់តារាង - រៀបចំឱ្យមានរបៀប */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
         th { background-color: #2980b9; color: white; }
+        
+        /* ការកំណត់ Column ជាក់លាក់ */
+        /* No */
+        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
+        /* Status */
+        th:nth-child(3), td:nth-child(3) { width: 90px; }
+        /* Desc (សល់ប៉ុន្មានគឺយកទាំងអស់) */
+        th:nth-child(2), td:nth-child(2) { width: auto; }
+        
+        /* ធាតុ Form និងប៊ូតុង */
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
         
-        /* ការកំណត់ទំហំ Column ជាក់លាក់ */
-        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
-        th:nth-child(3), td:nth-child(3) { width: 90px; }
-        th:nth-child(2), td:nth-child(2) { width: auto; word-wrap: break-word; }
-
         /* ការកំណត់សម្រាប់ Project List Cards */
         .project-card table { max-height: 150px; display: block; overflow-y: auto; }
     </style>
+    
 </head>
 <body>
 
