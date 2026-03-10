@@ -9,42 +9,21 @@
         .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+        
+        /* ការកំណត់តារាងទូទៅ */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
         
-        #task-table-body td:nth-child(1), #task-table-body th:nth-child(1) { width: 40px; text-align: center; }
-        #task-table-body td:nth-child(3), #task-table-body th:nth-child(3) { width: 90px; }
-        #task-table-body td:nth-child(6), #task-table-body th:nth-child(6) { width: 60px; }
-       
-        /* កំណត់ឱ្យតារាងមានទំហំថេរ ដើម្បីឱ្យការគ្រប់គ្រង Column ងាយស្រួល */
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-top: 10px;
-                font-size: 13px;
-                table-layout: fixed; /* នេះជាចំណុចសំខាន់ */
-            }
+        /* ការកំណត់ទំហំ Column ជាក់លាក់ */
+        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
+        th:nth-child(3), td:nth-child(3) { width: 90px; }
+        th:nth-child(2), td:nth-child(2) { width: auto; word-wrap: break-word; }
 
-            /* កំណត់ទំហំ Column "No" ឱ្យតូច */
-            th:nth-child(1), td:nth-child(1) {
-                width: 40px;
-                text-align: center;
-            }
-
-            /* កំណត់ទំហំ Column "Status" ឱ្យតូចល្មម */
-            th:nth-child(3), td:nth-child(3) {
-                width: 90px;
-            }
-
-            /* Column "Desc" នឹងយកទំហំដែលនៅសល់ទាំងអស់ដោយស្វ័យប្រវត្តិ */
-            th:nth-child(2), td:nth-child(2) {
-                width: auto;
-                word-wrap: break-word; /* ជួយកុំឱ្យអក្សររត់ហួសកូឡោន */
-            }
-        
+        /* ការកំណត់សម្រាប់ Project List Cards */
+        .project-card table { max-height: 150px; display: block; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -90,7 +69,7 @@
     let activeProjectId = '';
     let currentTasks = [];
 
-    async function loadProjects() {
+   async function loadProjects() {
         const res = await fetch('/get_projects');
         const data = await res.json();
         const list = document.getElementById('project-list');
@@ -100,20 +79,27 @@
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
             const taskData = await taskRes.json();
             
+            // ធ្វើការ Sort នៅទីនេះមុនពេលបង្ហាញ
+            let tasks = taskData.tasks || [];
+            tasks.sort((a, b) => {
+                // ១. យក "Done" ទៅលើគេ
+                if (a.status === 'Done' && b.status !== 'Done') return -1;
+                if (a.status !== 'Done' && b.status === 'Done') return 1;
+                // ២. បន្ទាប់មកតម្រៀបតាមលេខរៀង (No) ពីតូចទៅធំ
+                return parseInt(a.no) - parseInt(b.no);
+            });
+            
             const card = document.createElement('div');
             card.className = 'project-card';
             card.onclick = () => openProject(p.id);
             
-            // បង្ហាញតែ ៣ ហ្វ៊ីល៖ No, Des, Status
             card.innerHTML = `
                 <h3>Sub: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
                 <table style="pointer-events: none; font-size: 11px;">
-                    <thead>
-                        <tr><th>No</th><th>Desc</th><th>Status</th></tr>
-                    </thead>
+                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
-                        ${taskData.tasks?.map(t => `
+                        ${tasks.map(t => `
                             <tr>
                                 <td>${t.no}</td>
                                 <td>${t.description.substring(0, 15)}...</td>
