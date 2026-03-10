@@ -5,43 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 10px; }
-        .container { width: 100%; max-width: 900px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* Table Styles */
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .hidden { display: none !important; }
+        .btn-primary { background-color: #2980b9; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+        .btn-save { background-color: #27ae60; color: white; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
         th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
-
-        /* Buttons */
-        button { padding: 8px 12px; border-radius: 4px; border: none; cursor: pointer; color: white; }
-        .btn-new { background-color: #2980b9; width: 100%; margin-bottom: 10px; }
-        .btn-save { background-color: #27ae60; width: 100%; margin-top: 10px; font-weight: bold; }
-        .btn-edit { background-color: #2980b9; margin-right: 5px; }
-        .btn-delete { background-color: #e74c3c; }
-        
-        .project-item { 
-            padding: 12px; border: 1px solid #3498db; border-radius: 5px; 
-            margin-bottom: 5px; cursor: pointer; background: #ebf5fb; font-weight: bold;
-        }
-        .project-item:hover { background: #d4e6f1; }
-        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; }
+        .project-card { border: 1px solid #ddd; padding: 15px; margin-bottom: 10px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .project-card:hover { background-color: #f9f9f9; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="project-view">
+    <section id="project-view">
         <h2>បញ្ជី Project</h2>
-        <table>
-            <thead>
-                <tr><th>No</th><th>Desc</th><th>Status</th></tr>
-            </thead>
-            <tbody id="project-summary-body"></tbody>
-        </table>
-    </div>   
+        <button class="btn-primary" onclick="toggleProjectForm()">+ New Project</button>
+        <div id="project-form-container" class="hidden">
+            <input type="text" id="new_project_id" placeholder="Project ID">
+            <input type="date" id="new_project_date">
+            <button class="btn-primary btn-save" onclick="createProject()">រក្សាទុក</button>
+        </div>
+        <div id="project-list" style="margin-top: 20px;"></div>
+    </section>
 
-    <div id="task-view" style="display:none;">
+    <section id="task-view" class="hidden">
         <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
         <h2 id="current-project-title"></h2>
         <table>
@@ -49,127 +39,97 @@
                 <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
             </thead>
             <tbody id="task-table-body"></tbody>
+            <tr id="new-task-row" class="hidden">
+                <td><input type="text" id="new-no" style="width: 50px;"></td>
+                <td><input type="text" id="new-description"></td>
+                <td>
+                    <select id="new-status">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </td>
+                <td><input type="date" id="new-date"></td>
+                <td><input type="text" id="new-note"></td>
+            </tr>
         </table>
-        
-        <div id="input-form">
-            <input type="text" id="new-no" placeholder="No">
-            <input type="text" id="new-description" placeholder="Desc">
-            <select id="new-status"><option>Pending</option><option>Processing</option><option>Done</option></select>
-            <input type="date" id="new-date">
-            <input type="text" id="new-note" placeholder="Note">
-            <button onclick="saveNewTask()" class="btn-save">Save/Update Task</button>
-        </div>
-    </div>
+        <button id="plus-btn" style="margin-top: 10px;" onclick="toggleNewRow()">+</button>
+        <button id="save-btn" class="hidden btn-save" onclick="saveNewTask()">Save/Update</button>
+    </section>
 </div>
 
 <script>
     let activeProjectId = '';
-    let editingTaskId = null;
+    let currentTasks = [];
 
-    // --- Project Logic ---
-    function toggleProjectForm() {
-        const el = document.getElementById('project-form-container');
-        el.style.display = el.style.display === 'none' ? 'block' : 'none';
-    }
-
+    // បង្ហាញ Project List
     async function loadProjects() {
         const res = await fetch('/get_projects');
         const data = await res.json();
         const list = document.getElementById('project-list');
-        list.innerHTML = '';
-        data.projects.forEach(p => {
-            const div = document.createElement('div');
-            div.className = 'project-item';
-            div.innerText = `${p.id} - ${p.date}`;
-            div.onclick = () => selectProject(p.id);
-            list.appendChild(div);
-        });
+        list.innerHTML = data.projects.map(p => `
+            <div class="project-card" onclick="openProject('${p.id}')">
+                <h3>Sub: ${p.id}</h3>
+                <p>កាលបរិច្ឆេទ: ${p.date}</p>
+            </div>
+        `).join('');
     }
 
-    function selectProject(projectId) {
-        activeProjectId = projectId;
-        document.getElementById('task-section').style.display = 'block';
-        document.getElementById('current-project-title').innerText = "កិច្ចការក្នុង៖ " + projectId;
-        loadTasks();
-    }
-
-    async function createProject() {
-        const id = document.getElementById('new_project_id').value;
-        const date = document.getElementById('new_project_date').value;
-        if(!id) return alert("សូមដាក់ឈ្មោះ Project");
-        await fetch('/projects', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({id, date})
-        });
-        loadProjects();
-    }
-
-    // --- Task Logic ---
-    async function loadTasks() {
-        const res = await fetch(`/tasks?project_id=${activeProjectId}`);
-        const data = await res.json();
-        const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = '';
+    // បើក Project ជាក់លាក់
+    async function openProject(id) {
+        activeProjectId = id;
+        document.getElementById('project-view').classList.add('hidden');
+        document.getElementById('task-view').classList.remove('hidden');
+        document.getElementById('current-project-title').innerText = "Sub: " + id;
         
-        data.tasks.forEach(task => {
-            const row = tbody.insertRow();
-            row.innerHTML = `
-                <td>${task.no}</td>
-                <td>${task.description}</td>
-                <td>${task.status}</td>
-                <td>${task.date}</td>
-                <td>
-                    <button class="btn-edit" onclick='editTask(${JSON.stringify(task)})'>Edit</button>
-                    <button class="btn-delete" onclick="deleteTask('${task.id}')">Del</button>
-                </td>
-            `;
-        });
-        resetFields();
+        const res = await fetch(`/tasks?project_id=${id}`);
+        const data = await res.json();
+        currentTasks = data.tasks || [];
+        renderTasks();
     }
 
-    function editTask(task) {
-        editingTaskId = task.id;
-        document.getElementById('new-no').value = task.no;
-        document.getElementById('new-description').value = task.description;
-        document.getElementById('new-status').value = task.status;
-        document.getElementById('new-date').value = task.date;
-        window.scrollTo(0, document.body.scrollHeight); // រំកិលចុះក្រោមទៅកន្លែងកែ
+    // បង្ហាញតារាង Task
+    function renderTasks() {
+        const tbody = document.getElementById('task-table-body');
+        currentTasks.sort((a, b) => (a.status === 'Done' ? 1 : -1) || a.no - b.no);
+        tbody.innerHTML = currentTasks.map(t => `
+            <tr>
+                <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td>
+                <td>${t.date}</td><td>${t.note}</td>
+                <td><button onclick="editTask('${t.no}')">Edit</button></td>
+            </tr>
+        `).join('');
+    }
+
+    // បន្ថែម/កែសម្រួល Task
+    function toggleNewRow() {
+        document.getElementById('new-task-row').classList.remove('hidden');
+        document.getElementById('plus-btn').classList.add('hidden');
+        document.getElementById('save-btn').classList.remove('hidden');
     }
 
     async function saveNewTask() {
-        const taskData = {
-            id: editingTaskId,
+        const payload = {
             project_id: activeProjectId,
             no: document.getElementById('new-no').value,
             description: document.getElementById('new-description').value,
             status: document.getElementById('new-status').value,
-            date: document.getElementById('new-date').value
+            date: document.getElementById('new-date').value,
+            note: document.getElementById('new-note').value
         };
-
-        const endpoint = editingTaskId ? '/update_task' : '/tasks';
-        await fetch(endpoint, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(taskData)
-        });
-
-        editingTaskId = null;
-        loadTasks();
+        await fetch('/tasks', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+        document.getElementById('new-task-row').classList.add('hidden');
+        document.getElementById('save-btn').classList.add('hidden');
+        document.getElementById('plus-btn').classList.remove('hidden');
+        openProject(activeProjectId);
     }
 
-    async function deleteTask(taskId) {
-        if(confirm("លុបការងារនេះ?")) {
-            await fetch(`/delete_task/${taskId}`, { method: 'DELETE' });
-            loadTasks();
-        }
+    function showProjects() { 
+        document.getElementById('project-view').classList.remove('hidden'); 
+        document.getElementById('task-view').classList.add('hidden'); 
     }
 
-    function resetFields() {
-        document.getElementById('new-no').value = '';
-        document.getElementById('new-description').value = '';
-        document.getElementById('new-date').value = new Date().toISOString().split('T')[0];
-    }
+    function toggleProjectForm() { document.getElementById('project-form-container').classList.toggle('hidden'); }
 
     window.onload = loadProjects;
 </script>
