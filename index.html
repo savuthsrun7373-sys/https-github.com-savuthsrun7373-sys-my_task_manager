@@ -9,24 +9,15 @@
         .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
-
-        /* កំណត់ទំហំសម្រាប់ Table Columns */
-        #task-table-body td:nth-child(1), #task-table-body th:nth-child(1) {
-            width: 50px;  /* No */
-            text-align: center;
-        }
-        #task-table-body td:nth-child(3), #task-table-body th:nth-child(3) {
-            width: 100px; /* Status */
-        }
-        #task-table-body td:nth-child(2), #task-table-body th:nth-child(2) {
-            width: auto;  /* Desc នឹងយកទំហំដែលនៅសល់ទាំងអស់ */
-        }
-
+        
+        #task-table-body td:nth-child(1), #task-table-body th:nth-child(1) { width: 40px; text-align: center; }
+        #task-table-body td:nth-child(3), #task-table-body th:nth-child(3) { width: 90px; }
+        #task-table-body td:nth-child(6), #task-table-body th:nth-child(6) { width: 60px; }
     </style>
 </head>
 <body>
@@ -48,11 +39,11 @@
         <h2 id="current-project-title"></h2>
         <table>
             <thead>
-                <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th></tr>
+                <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
             </thead>
             <tbody id="task-table-body"></tbody>
             <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
-                <td><input type="text" id="new-no" style="width: 40px;"></td>
+                <td><input type="text" id="new-no"></td>
                 <td><input type="text" id="new-description"></td>
                 <td>
                     <select id="new-status">
@@ -64,12 +55,13 @@
             </tr>
         </table>
         <button onclick="toggleNewRow()" id="plus-btn">+</button>
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save</button>
+        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save/Update</button>
     </div>
 </div>
 
 <script>
     let activeProjectId = '';
+    let currentTasks = [];
 
     async function loadProjects() {
         const res = await fetch('/get_projects');
@@ -77,19 +69,10 @@
         const list = document.getElementById('project-list');
         list.innerHTML = '';
         for (const p of data.projects) {
-            const taskRes = await fetch(`/tasks?project_id=${p.id}`);
-            const taskData = await taskRes.json();
             const card = document.createElement('div');
             card.className = 'project-card';
             card.onclick = () => openProject(p.id);
-            card.innerHTML = `
-                <h3>Sub: ${p.id}</h3>
-                <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                <table style="pointer-events: none;">
-                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
-                    <tbody>${taskData.tasks?.map(t => `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`).join('') || '<tr><td colspan="3">No tasks</td></tr>'}</tbody>
-                </table>
-            `;
+            card.innerHTML = `<h3>Sub: ${p.id}</h3><p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>`;
             list.appendChild(card);
         }
     }
@@ -102,35 +85,42 @@
         
         const res = await fetch(`/tasks?project_id=${id}`);
         const data = await res.json();
+        currentTasks = data.tasks || [];
         
-        // ចាប់ផ្តើមតម្រៀបទិន្នន័យ (Sort)
-        let taskList = data.tasks || [];
-        
-        taskList.sort((a, b) => {
-            // ១. យក Status "Done" ទៅលើគេ (បើកាលណាសរសេរ a.status === 'Done' វាគឺ true=1, false=0)
-            // យើងចង់បាន Done លើគេ ដូច្នេះយក b មុន a
+        sortAndRender();
+    }
+
+    function sortAndRender() {
+        currentTasks.sort((a, b) => {
             if (a.status === 'Done' && b.status !== 'Done') return -1;
             if (a.status !== 'Done' && b.status === 'Done') return 1;
-            
-            // ២. បន្ទាប់មកតម្រៀបតាមលេខរៀង (No)
             return parseInt(a.no) - parseInt(b.no);
         });
         
         const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = taskList.map(t => `<tr>
-            <td>${t.no || ''}</td>
-            <td>${t.description || ''}</td>
-            <td>${t.status || ''}</td>
-            <td>${t.date || ''}</td>
-            <td>${t.note || ''}</td>
-        </tr>`).join('');
+        tbody.innerHTML = currentTasks.map(t => `
+            <tr>
+                <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td><td>${t.date}</td><td>${t.note}</td>
+                <td><button onclick="editTask('${t.no}')">Edit</button></td>
+            </tr>
+        `).join('');
     }
+
     function toggleNewRow() {
         document.getElementById('new-task-row').style.display = 'table-row';
         document.getElementById('plus-btn').style.display = 'none';
         document.getElementById('save-btn').style.display = 'inline';
-        const tbody = document.getElementById('task-table-body');
-        document.getElementById('new-no').value = (tbody.rows.length + 1).toString().padStart(2, '0');
+    }
+
+    function editTask(no) {
+        const task = currentTasks.find(t => t.no === no);
+        if (!task) return;
+        toggleNewRow();
+        document.getElementById('new-no').value = task.no;
+        document.getElementById('new-description').value = task.description;
+        document.getElementById('new-status').value = task.status;
+        document.getElementById('new-date').value = task.date;
+        document.getElementById('new-note').value = task.note;
     }
 
     async function saveNewTask() {
