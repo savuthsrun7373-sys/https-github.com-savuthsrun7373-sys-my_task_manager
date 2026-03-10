@@ -64,30 +64,39 @@
     let currentTasks = [];
 
     async function loadProjects() {
-        try {
-            const res = await fetch('/get_projects');
-            const data = await res.json();
-            const list = document.getElementById('project-list');
-            list.innerHTML = ''; // លុបកន្លែងចាស់ចោលមុនពេល Render ថ្មី
+        const res = await fetch('/get_projects');
+        const data = await res.json();
+        const list = document.getElementById('project-list');
+        list.innerHTML = '';
+        
+        for (const p of data.projects) {
+            const taskRes = await fetch(`/tasks?project_id=${p.id}`);
+            const taskData = await taskRes.json();
             
-            // ពិនិត្យមើលថា data.projects មានទិន្នន័យមែនទេ
-            if (data.projects && data.projects.length > 0) {
-                for (const p of data.projects) {
-                    const card = document.createElement('div');
-                    card.className = 'project-card';
-                    card.onclick = () => openProject(p.id);
-                    // បង្ហាញឈ្មោះ Project និងកាលបរិច្ឆេទ
-                    card.innerHTML = `
-                        <h3>Sub: ${p.id || 'Unknown'}</h3>
-                        <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                    `;
-                    list.appendChild(card);
-                }
-            } else {
-                list.innerHTML = '<p>មិនមាន Project ក្នុងប្រព័ន្ធទេ។</p>';
-            }
-        } catch (error) {
-            console.error("Error loading projects:", error);
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.onclick = () => openProject(p.id);
+            
+            // បង្ហាញតែ ៣ ហ្វ៊ីល៖ No, Des, Status
+            card.innerHTML = `
+                <h3>Sub: ${p.id}</h3>
+                <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                <table style="pointer-events: none; font-size: 11px;">
+                    <thead>
+                        <tr><th>No</th><th>Desc</th><th>Status</th></tr>
+                    </thead>
+                    <tbody>
+                        ${taskData.tasks?.slice(0, 3).map(t => `
+                            <tr>
+                                <td>${t.no}</td>
+                                <td>${t.description.substring(0, 15)}...</td>
+                                <td>${t.status}</td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
+                    </tbody>
+                </table>
+            `;
+            list.appendChild(card);
         }
     }
 
