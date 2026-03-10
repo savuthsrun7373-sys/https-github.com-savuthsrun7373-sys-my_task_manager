@@ -86,12 +86,32 @@
         document.getElementById('project-view').style.display = 'none';
         document.getElementById('task-view').style.display = 'block';
         document.getElementById('current-project-title').innerText = "Sub: " + id;
+        
         const res = await fetch(`/tasks?project_id=${id}`);
         const data = await res.json();
+        
+        // ចាប់ផ្តើមតម្រៀបទិន្នន័យ (Sort)
+        let taskList = data.tasks || [];
+        
+        taskList.sort((a, b) => {
+            // ១. យក Status "Done" ទៅលើគេ (បើកាលណាសរសេរ a.status === 'Done' វាគឺ true=1, false=0)
+            // យើងចង់បាន Done លើគេ ដូច្នេះយក b មុន a
+            if (a.status === 'Done' && b.status !== 'Done') return -1;
+            if (a.status !== 'Done' && b.status === 'Done') return 1;
+            
+            // ២. បន្ទាប់មកតម្រៀបតាមលេខរៀង (No)
+            return parseInt(a.no) - parseInt(b.no);
+        });
+        
         const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = data.tasks?.map(t => `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td><td>${t.date}</td><td>${t.note}</td></tr>`).join('') || '<tr><td colspan="5">No tasks</td></tr>';
+        tbody.innerHTML = taskList.map(t => `<tr>
+            <td>${t.no || ''}</td>
+            <td>${t.description || ''}</td>
+            <td>${t.status || ''}</td>
+            <td>${t.date || ''}</td>
+            <td>${t.note || ''}</td>
+        </tr>`).join('');
     }
-
     function toggleNewRow() {
         document.getElementById('new-task-row').style.display = 'table-row';
         document.getElementById('plus-btn').style.display = 'none';
