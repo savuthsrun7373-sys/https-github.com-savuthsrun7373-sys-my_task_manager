@@ -19,22 +19,28 @@
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
 
-        /* កំណត់តារាងក្នុង Project Card */
+        /* កំណត់សម្រាប់តារាងក្នុង Project Card */
             .project-card table { 
                 width: 100%; 
-                table-layout: fixed; /* ប្រើ fixed ដើម្បីគ្រប់គ្រងទំហំ */
+                table-layout: auto; /* សំខាន់បំផុត៖ ប្រើ auto ដើម្បីឱ្យជួរឈរ Desc រីកធំតាមទំហំដែលនៅសល់ */
                 border-collapse: collapse;
                 font-size: 11px;
             }
 
-            /* កំណត់ Column ក្នុង Project Card */
-            .project-card table th:nth-child(1), .project-card table td:nth-child(1) { width: 30px; } /* No */
-            .project-card table th:nth-child(3), .project-card table td:nth-child(3) { width: 60px; } /* Status */
+            /* កំណត់ទំហំជាក់លាក់សម្រាប់តែជួរឈរ No និង Status */
+            .project-card table th:nth-child(1), .project-card table td:nth-child(1) { 
+                width: 30px; 
+                text-align: center; 
+            }
+            .project-card table th:nth-child(3), .project-card table td:nth-child(3) { 
+                width: 60px; 
+            }
 
-            /* Desc: នេះគឺជាកន្លែងដែលយើងចង់ឱ្យវារីកធំ */
+            /* ជួរឈរ Desc នឹងយកទំហំដែលនៅសល់ទាំងអស់ដោយស្វ័យប្រវត្តិ */
             .project-card table th:nth-child(2), .project-card table td:nth-child(2) { 
                 width: auto; 
-                word-break: break-all; /* ជួយកាត់ពាក្យឱ្យចូលក្នុងកន្លែង */
+                padding-left: 8px;
+                word-break: break-all; /* កាត់ពាក្យមិនឱ្យរុញតារាងធំជាង Card */
             }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
         th { background-color: #2980b9; color: white; }
