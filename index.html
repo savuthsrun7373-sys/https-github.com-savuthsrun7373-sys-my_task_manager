@@ -7,63 +7,31 @@
     <style>
         /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { 
-            width: 95%; /* ប្រើ 95% ដើម្បីឱ្យវារត់ពេញអេក្រង់ល្មម */
-            max-width: 1200px; /* បង្កើនទំហំអតិបរមា */
-            margin: auto; 
-            background: white; 
-            padding: 15px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
-        }
-        #project-list { display: grid; gap: 10px; margin-top: 20px; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
-
-        /* កំណត់សម្រាប់តារាងក្នុង Project Card */
-            .project-card table { 
-                width: 100%; 
-                table-layout: auto; /* សំខាន់បំផុត៖ ប្រើ auto ដើម្បីឱ្យជួរឈរ Desc រីកធំតាមទំហំដែលនៅសល់ */
-                border-collapse: collapse;
-                font-size: 11px;
-            }
-
-            /* កំណត់ទំហំជាក់លាក់សម្រាប់តែជួរឈរ No និង Status */
-            .project-card table th:nth-child(1), .project-card table td:nth-child(1) { 
-                width: 30px; 
-                text-align: center; 
-            }
-            .project-card table th:nth-child(3), .project-card table td:nth-child(3) { 
-                width: 60px; 
-            }
-
-            /* ជួរឈរ Desc នឹងយកទំហំដែលនៅសល់ទាំងអស់ដោយស្វ័យប្រវត្តិ */
-            .project-card table th:nth-child(2), .project-card table td:nth-child(2) { 
-                width: auto; 
-                padding-left: 8px;
-                word-break: break-all; /* កាត់ពាក្យមិនឱ្យរុញតារាងធំជាង Card */
-            }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
+        .container { width: 95%; max-width: 1200px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* ការកំណត់ទូទៅសម្រាប់តារាង */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: auto; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
 
-        /* តារាង 3 ជួរឈរ (Project List) */
+        /* ការកំណត់សម្រាប់ Project List Cards */
+        #project-list { display: grid; gap: 10px; margin-top: 20px; }
+        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; }
+        
+        /* ជួរឈរ Desc ក្នុង Project Card: ឱ្យវាធំតាមកន្លែងដែលសល់ */
+        .project-card table th:nth-child(2), .project-card table td:nth-child(2) { width: auto; word-break: break-word; }
         .project-card table th:nth-child(1), .project-card table td:nth-child(1) { width: 30px; text-align: center; }
-        .project-card table th:nth-child(3), .project-card table td:nth-child(3) { width: 80px; }
-        .project-card table th:nth-child(2), .project-card table td:nth-child(2) { width: auto; }
+        .project-card table th:nth-child(3), .project-card table td:nth-child(3) { width: 60px; }
 
-        /* តារាង 6 ជួរឈរ (Task View) */
-        #task-view table th:nth-child(1), #task-view table td:nth-child(1) { width: 40px; }
-        #task-view table th:nth-child(3), #task-view table td:nth-child(3) { width: 80px; }
-        #task-view table th:nth-child(4), #task-view table td:nth-child(4) { width: 80px; }
-        #task-view table th:nth-child(5), #task-view table td:nth-child(5) { width: 80px; }
-        #task-view table th:nth-child(6), #task-view table td:nth-child(6) { width: 60px; }
-        #task-view table th:nth-child(2), #task-view table td:nth-child(2) { width: auto; }
+        /* ការកំណត់សម្រាប់ Task View */
+        #task-view table th:nth-child(1) { width: 40px; }
+        #task-view table th:nth-child(3), #task-view table th:nth-child(4), #task-view table th:nth-child(5) { width: 80px; }
+        #task-view table th:nth-child(6) { width: 60px; }
+        #task-view table th:nth-child(2) { width: auto; }
 
         /* ធាតុ Form និងប៊ូតុង */
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
-
-        /* ការកំណត់សម្រាប់ Project List Cards */
-        .project-card table { max-height: 150px; display: block; overflow-y: auto; }
     </style>
 </head>
 <body>
