@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
     <style>
-        /* CSS សម្រាប់ភាពស្អាតលើទូរសព្ទ */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); box-sizing: border-box; }
-        
-        /* Grid សម្រាប់ Project */
-        #project-list { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 20px; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.3s; }
-        .project-card:hover { border-color: #2980b9; }
-
-        /* តារាង និង Form */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
-        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #project-list { display: grid; gap: 10px; margin-top: 20px; }
+        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
-        input, select, button { width: 100%; padding: 12px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-        button { background-color: #2980b9; color: white; cursor: pointer; border: none; }
+        input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -39,230 +33,94 @@
     <div id="task-view" style="display:none;">
         <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
         <h2 id="current-project-title"></h2>
-
         <table>
             <thead>
                 <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th></tr>
             </thead>
-            <tbody id="task-table-body">
-                </tbody>
+            <tbody id="task-table-body"></tbody>
             <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
                 <td><input type="text" id="new-no" style="width: 40px;"></td>
-                <td><input type="text" id="new-description" style="width: 100%;"></td>
+                <td><input type="text" id="new-description"></td>
                 <td>
                     <select id="new-status">
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Done">Done</option>
+                        <option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Done">Done</option>
                     </select>
                 </td>
                 <td><input type="date" id="new-date"></td>
-                <td><input type="text" id="new-note" style="width: 100%;"></td>
+                <td><input type="text" id="new-note"></td>
             </tr>
         </table>
-
-        <button onclick="toggleNewRow()" id="plus-btn" style="margin-top: 10px;">+</button>
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; margin-top: 10px; background-color: #27ae60;">Save</button>
-        
+        <button onclick="toggleNewRow()" id="plus-btn">+</button>
+        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save</button>
     </div>
 </div>
 
 <script>
     let activeProjectId = '';
 
-    // ទាញយក Project
     async function loadProjects() {
         const res = await fetch('/get_projects');
         const data = await res.json();
         const list = document.getElementById('project-list');
         list.innerHTML = '';
-        
         for (const p of data.projects) {
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
             const taskData = await taskRes.json();
-            
-            // ក្នុង loop នៃ loadProjects
-            let taskRows = '';
-            if (taskData.tasks && taskData.tasks.length > 0) {
-                // កែសម្រួលនៅក្នុង loop នៃ loadProjects ក្នុង index.html
-                taskRows = taskData.tasks.map(t => {
-                    // ពិនិត្យមើលតម្លៃ date ដែលមកពី Backend
-                    let displayDate = t.date ? t.date : 'N/A';
-                    
-                    // បើសិនជាទម្រង់ YYYY-MM-DD ចង់ប្តូរជា DD-MM-YYYY
-                    if (displayDate !== 'N/A' && displayDate.includes('-')) {
-                        const p = displayDate.split('-');
-                        if (p.length === 3) displayDate = `${p[2]}-${p[1]}-${p[0]}`;
-                    }
-
-                    return `<tr>
-                        <td>${t.no || ''}</td>
-                        <td>${t.description || ''}</td>
-                        <td>${t.status || ''}</td>
-                        <td>${displayDate}</td>
-                        <td>${t.note || ''}</td>
-                    </tr>`;
-                }).join('');
-
-            } else {
-                taskRows = '<tr><td colspan="5">មិនមាន Task</td></tr>';
-            }
-
             const card = document.createElement('div');
             card.className = 'project-card';
-            card.dataset.projectId = p.id; 
-            card.onclick = function() { openProject(this.dataset.projectId); };
-
-            // ក្នុងមុខងារ loadProjects()
+            card.onclick = () => openProject(p.id);
             card.innerHTML = `
                 <h3>Sub: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                <table style="pointer-events: none; font-size: 12px;"> 
-                    <thead>
-                        <tr>
-                            <th>No</th><th>Desc</th><th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${taskData.tasks.map(t => `
-                            <tr>
-                                <td>${t.no || ''}</td>
-                                <td>${t.description || ''}</td>
-                                <td>${t.status || ''}</td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
+                <table style="pointer-events: none;">
+                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+                    <tbody>${taskData.tasks?.map(t => `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`).join('') || '<tr><td colspan="3">No tasks</td></tr>'}</tbody>
                 </table>
             `;
             list.appendChild(card);
         }
     }
 
-    // បើក Project View
-    // កែសម្រួលផ្នែក openProject ក្នុង index.html
     async function openProject(id) {
         activeProjectId = id;
         document.getElementById('project-view').style.display = 'none';
         document.getElementById('task-view').style.display = 'block';
-        document.getElementById('current-project-title').innerText = "Sub: " + id; // ដូរពី Project ទៅ Sub
-        
+        document.getElementById('current-project-title').innerText = "Sub: " + id;
         const res = await fetch(`/tasks?project_id=${id}`);
         const data = await res.json();
-        
         const tbody = document.getElementById('task-table-body');
-        tbody.innerHTML = ''; 
-
-        const taskList = data.tasks; 
-
-        if (taskList && taskList.length > 0) {
-            taskList.forEach(t => {
-                // បន្ថែម date និង note នៅទីនេះ
-                tbody.innerHTML += `<tr>
-                    <td>${t.no || ''}</td>
-                    <td>${t.description || ''}</td>
-                    <td>${t.status || ''}</td>
-                    <td>${t.date || ''}</td>
-                    <td>${t.note || ''}</td>
-                </tr>`;
-            });
-        } else {
-            tbody.innerHTML = '<tr><td colspan="5">មិនមានទិន្នន័យការងារទេ</td></tr>';
-        }
+        tbody.innerHTML = data.tasks?.map(t => `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td><td>${t.date}</td><td>${t.note}</td></tr>`).join('') || '<tr><td colspan="5">No tasks</td></tr>';
     }
-
-    // ២. មុខងារលាក់/បង្ហាញ Form
-    function toggleTaskForm() {
-        const f = document.getElementById('task-form');
-        f.style.display = (f.style.display === 'none') ? 'block' : 'none';
-    }
-
-    // បន្ថែម Task (រក្សាទុកកូដនេះ ប៉ុន្តែត្រូវប្រាកដថា ID ក្នុង HTML គឺត្រូវគ្នា)
-    document.getElementById('task-form').onsubmit = async (e) => {
-        e.preventDefault();
-        
-        const payload = {
-            project_id: activeProjectId,
-            no: document.getElementById('no').value,
-            description: document.getElementById('description').value,
-            status: document.getElementById('status').value,
-            date: document.getElementById('date').value, // ត្រូវប្រាកដថា <input id="date"> មានក្នុង HTML
-            note: document.getElementById('note').value
-        };
-
-        await fetch('/tasks', { 
-            method: 'POST', 
-            headers: {'Content-Type': 'application/json'}, 
-            body: JSON.stringify(payload) 
-        });
-
-        // បន្ទាប់ពី Save រួច៖
-        openProject(activeProjectId); // Refresh តារាង
-        document.getElementById('task-form').reset(); // សម្អាត Form
-        toggleTaskForm(); // លាក់ Form វិញដោយស្វ័យប្រវត្តិ
-    };
-
-    function showProjects() {
-        document.getElementById('project-view').style.display = 'block';
-        document.getElementById('task-view').style.display = 'none';
-    }
-
-    function toggleProjectForm() {
-        const f = document.getElementById('project-form-container');
-        f.style.display = (f.style.display === 'none') ? 'block' : 'none';
-    }
-
-    async function createProject() {
-        const id = document.getElementById('new_project_id').value;
-        const date = document.getElementById('new_project_date').value;
-        await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id, date}) });
-        loadProjects();
-        toggleProjectForm();
-    }
-
-    window.onload = loadProjects;
 
     function toggleNewRow() {
-    const row = document.getElementById('new-task-row');
-    const plusBtn = document.getElementById('plus-btn');
-    const saveBtn = document.getElementById('save-btn');
-    
-    // បង្ហាញ Row ថ្មី
-    row.style.display = 'table-row';
-    plusBtn.style.display = 'none';
-    saveBtn.style.display = 'inline';
+        document.getElementById('new-task-row').style.display = 'table-row';
+        document.getElementById('plus-btn').style.display = 'none';
+        document.getElementById('save-btn').style.display = 'inline';
+        const tbody = document.getElementById('task-table-body');
+        document.getElementById('new-no').value = (tbody.rows.length + 1).toString().padStart(2, '0');
+    }
 
-    // ស្វ័យប្រវត្តិដាក់លេខរៀង (យកចំនួន row ដែលមានស្រាប់បូកនឹង 1)
-    const tbody = document.getElementById('task-table-body');
-    const nextNo = (tbody.rows.length + 1).toString().padStart(2, '0');
-    document.getElementById('new-no').value = nextNo;
-}
+    async function saveNewTask() {
+        const payload = {
+            project_id: activeProjectId,
+            no: document.getElementById('new-no').value,
+            description: document.getElementById('new-description').value,
+            status: document.getElementById('new-status').value,
+            date: document.getElementById('new-date').value,
+            note: document.getElementById('new-note').value
+        };
+        await fetch('/tasks', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+        document.getElementById('new-task-row').style.display = 'none';
+        document.getElementById('save-btn').style.display = 'none';
+        document.getElementById('plus-btn').style.display = 'inline';
+        openProject(activeProjectId);
+    }
 
-async function saveNewTask() {
-    const payload = {
-        project_id: activeProjectId,
-        no: document.getElementById('new-no').value,
-        description: document.getElementById('new-description').value,
-        status: document.getElementById('new-status').value,
-        date: document.getElementById('new-date').value,
-        note: document.getElementById('new-note').value
-    };
+    function showProjects() { document.getElementById('project-view').style.display = 'block'; document.getElementById('task-view').style.display = 'none'; }
+    function toggleProjectForm() { const f = document.getElementById('project-form-container'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
+    async function createProject() { await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: document.getElementById('new_project_id').value, date: document.getElementById('new_project_date').value}) }); loadProjects(); toggleProjectForm(); }
 
-    // ផ្ញើទៅ Backend
-    await fetch('/tasks', { 
-        method: 'POST', 
-        headers: {'Content-Type': 'application/json'}, 
-        body: JSON.stringify(payload) 
-    });
-
-    // បិទ Row វិញ រួច Refresh តារាង
-    document.getElementById('new-task-row').style.display = 'none';
-    document.getElementById('save-btn').style.display = 'none';
-    document.getElementById('plus-btn').style.display = 'inline';
-    
-    openProject(activeProjectId); 
-}
-
-
+    window.onload = loadProjects;
 </script>
 </body>
 </html>
