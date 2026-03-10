@@ -2,74 +2,50 @@
 <html lang="km">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
-
     <style>
-        /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        #project-list { display: grid; gap: 10px; margin-top: 20px; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
+        .container { width: 100%; max-width: 800px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        /* ការកំណត់តារាង - រៀបចំឱ្យមានរបៀប */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
-        th { background-color: #2980b9; color: white; }
+        /* តារាងមេ (Task View) */
+        .task-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
+        .task-table th, .task-table td { padding: 8px; border: 1px solid #ddd; word-wrap: break-word; }
+        .task-table th { background-color: #2980b9; color: white; }
         
-        /* ការកំណត់ Column ជាក់លាក់ */
-        /* No */
-        th:nth-child(1), td:nth-child(1) { width: 40px; text-align: center; }
-        /* Status */
-        th:nth-child(3), td:nth-child(3) { width: 90px; }
-        /* Desc (សល់ប៉ុន្មានគឺយកទាំងអស់) */
-        th:nth-child(2), td:nth-child(2) { width: auto; }
+        /* កំណត់ទំហំ Column ជាក់លាក់សម្រាប់តារាងមេ */
+        .task-table th:nth-child(1), .task-table td:nth-child(1) { width: 40px; text-align: center; } /* No */
+        .task-table th:nth-child(3), .task-table td:nth-child(3) { width: 90px; } /* Status */
+        .task-table th:nth-child(4), .task-table td:nth-child(4) { width: 100px; } /* Date */
+        .task-table th:nth-child(6), .task-table td:nth-child(6) { width: 80px; } /* Action */
+        .task-table th:nth-child(2), .task-table td:nth-child(2) { width: auto; } /* Desc (យកសល់ទាំងអស់) */
+
+        /* តារាងក្នុង Card */
+        .project-card table { width: 100%; font-size: 11px; table-layout: fixed; pointer-events: none; }
+        .project-card td { border: 1px solid #ddd; padding: 4px; }
         
-        /* ធាតុ Form និងប៊ូតុង */
-        input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-        button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
-        
-        /* ការកំណត់សម្រាប់ Project List Cards */
-        .project-card table { max-height: 150px; display: block; overflow-y: auto; }
+        input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; }
+        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; margin-bottom: 10px; }
     </style>
-    
 </head>
 <body>
 
 <div class="container">
     <div id="project-view">
         <h2>បញ្ជី Project</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
-        <div id="project-form-container" style="display: none; margin-top: 10px;">
-            <input type="text" id="new_project_id" placeholder="Project ID">
-            <input type="date" id="new_project_date">
-            <button onclick="createProject()">រក្សាទុក</button>
-        </div>
         <div id="project-list"></div>
     </div>
 
     <div id="task-view" style="display:none;">
         <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
         <h2 id="current-project-title"></h2>
-        <table>
+        <table class="task-table">
             <thead>
                 <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
             </thead>
             <tbody id="task-table-body"></tbody>
-            <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
-                <td><input type="text" id="new-no"></td>
-                <td><input type="text" id="new-description"></td>
-                <td>
-                    <select id="new-status">
-                        <option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Done">Done</option>
-                    </select>
-                </td>
-                <td><input type="date" id="new-date"></td>
-                <td><input type="text" id="new-note"></td>
-            </tr>
         </table>
         <button onclick="toggleNewRow()" id="plus-btn">+</button>
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save/Update</button>
+        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60; color:white;">Save/Update</button>
     </div>
 </div>
 
