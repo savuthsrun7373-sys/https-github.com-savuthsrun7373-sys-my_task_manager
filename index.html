@@ -5,16 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 800px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
-        th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 10px; }
+        .container { width: 100%; max-width: 900px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        /* Table Styles */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 13px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
-        input, select, button { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
-        button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
-        .project-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
-        .project-item:hover { background-color: #f0f0f0; }
-        .edit-btn { background-color: #f39c12; color: white; padding: 4px 8px; width: auto; font-size: 11px; }
+
+        /* Buttons */
+        button { padding: 8px 12px; border-radius: 4px; border: none; cursor: pointer; color: white; }
+        .btn-new { background-color: #2980b9; width: 100%; margin-bottom: 10px; }
+        .btn-save { background-color: #27ae60; width: 100%; margin-top: 10px; font-weight: bold; }
+        .btn-edit { background-color: #2980b9; margin-right: 5px; }
+        .btn-delete { background-color: #e74c3c; }
+        
+        .project-item { 
+            padding: 12px; border: 1px solid #3498db; border-radius: 5px; 
+            margin-bottom: 5px; cursor: pointer; background: #ebf5fb; font-weight: bold;
+        }
+        .project-item:hover { background: #d4e6f1; }
+        input, select { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
@@ -22,30 +33,33 @@
 <div class="container">
     <div id="project-view">
         <h2>បញ្ជី Project</h2>
-        <button onclick="toggleProjectForm()">+ New Project</button>
-        <div id="project-form-container" style="display: none; margin-top: 10px; border: 1px solid #ccc; padding: 10px;">
-            <input type="text" id="new_project_id" placeholder="Project ID (ឈ្មោះ)">
+        <button class="btn-new" onclick="toggleProjectForm()">+ New Project</button>
+        
+        <div id="project-form-container" style="display: none; margin-bottom: 15px;">
+            <input type="text" id="new_project_id" placeholder="Project ID">
             <input type="date" id="new_project_date">
-            <button onclick="createProject()" style="background-color: #27ae60;">រក្សាទុក</button>
+            <button class="btn-save" onclick="createProject()">រក្សាទុក Project</button>
         </div>
+
         <div id="project-list"></div>
     </div>
 
-    <div id="task-view" style="display:none;">
-        <button onclick="showProjects()" style="background-color: #7f8c8d; width: auto;">⬅️ ត្រឡប់ក្រោយ</button>
-        <h2 id="current-project-title"></h2>
+    <hr style="margin: 20px 0;">
+
+    <div id="task-section" style="display:none;">
+        <h2 id="current-project-title" style="color: #2c3e50;"></h2>
         <table>
             <thead>
                 <tr>
-                    <th style="width: 40px;">No</th>
+                    <th style="width: 50px;">No</th>
                     <th>Desc</th>
                     <th style="width: 100px;">Status</th>
-                    <th style="width: 100px;">Date</th>
-                    <th style="width: 80px;">Action</th>
+                    <th style="width: 110px;">Date</th>
+                    <th style="width: 130px;">Action</th>
                 </tr>
             </thead>
             <tbody id="task-table-body"></tbody>
-            <tr id="input-row" style="display:none; background-color: #e8f4fd;">
+            <tr id="input-row" style="background-color: #f9f9f9;">
                 <td><input type="text" id="new-no"></td>
                 <td><input type="text" id="new-description"></td>
                 <td>
@@ -56,18 +70,18 @@
                     </select>
                 </td>
                 <td><input type="date" id="new-date"></td>
-                <td><button onclick="saveNewTask()" id="save-btn" style="background-color: #27ae60;">Save</button></td>
+                <td>---</td>
             </tr>
         </table>
-        <button onclick="toggleNewRow()" id="plus-btn" style="margin-top: 10px;">+ បន្ថែមការងារថ្មី</button>
+        <button class="btn-save" onclick="saveNewTask()">Save/Update Task</button>
     </div>
 </div>
 
 <script>
     let activeProjectId = '';
-    let editingTaskId = null; // សំខាន់៖ ទុកសម្រាប់ដឹងថា Edit ឬ Create
+    let editingTaskId = null;
 
-    // --- គ្រប់គ្រង Project ---
+    // --- Project Logic ---
     function toggleProjectForm() {
         const el = document.getElementById('project-form-container');
         el.style.display = el.style.display === 'none' ? 'block' : 'none';
@@ -81,41 +95,32 @@
         data.projects.forEach(p => {
             const div = document.createElement('div');
             div.className = 'project-item';
-            div.innerHTML = `<span><strong>${p.id}</strong> - ${p.date}</span>`;
-            div.onclick = () => showTasks(p.id);
+            div.innerText = `${p.id} - ${p.date}`;
+            div.onclick = () => selectProject(p.id);
             list.appendChild(div);
         });
+    }
+
+    function selectProject(projectId) {
+        activeProjectId = projectId;
+        document.getElementById('task-section').style.display = 'block';
+        document.getElementById('current-project-title').innerText = "កិច្ចការក្នុង៖ " + projectId;
+        loadTasks();
     }
 
     async function createProject() {
         const id = document.getElementById('new_project_id').value;
         const date = document.getElementById('new_project_date').value;
-        if(!id || !date) return alert("សូមបំពេញទិន្នន័យ");
-        
+        if(!id) return alert("សូមដាក់ឈ្មោះ Project");
         await fetch('/projects', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({id, date})
         });
-        document.getElementById('new_project_id').value = '';
-        toggleProjectForm();
         loadProjects();
     }
 
-    // --- គ្រប់គ្រង Task ---
-    function showProjects() {
-        document.getElementById('project-view').style.display = 'block';
-        document.getElementById('task-view').style.display = 'none';
-    }
-
-    async function showTasks(projectId) {
-        activeProjectId = projectId;
-        document.getElementById('current-project-title').innerText = "Project: " + projectId;
-        document.getElementById('project-view').style.display = 'none';
-        document.getElementById('task-view').style.display = 'block';
-        loadTasks();
-    }
-
+    // --- Task Logic ---
     async function loadTasks() {
         const res = await fetch(`/tasks?project_id=${activeProjectId}`);
         const data = await res.json();
@@ -129,25 +134,22 @@
                 <td>${task.description}</td>
                 <td>${task.status}</td>
                 <td>${task.date}</td>
-                <td><button class="edit-btn" onclick='editTask(${JSON.stringify(task)})'>Edit</button></td>
+                <td>
+                    <button class="btn-edit" onclick='editTask(${JSON.stringify(task)})'>Edit</button>
+                    <button class="btn-delete" onclick="deleteTask('${task.id}')">Del</button>
+                </td>
             `;
         });
-        resetInputForm();
-    }
-
-    function toggleNewRow() {
-        editingTaskId = null; // បើចុច "+" គឺបង្កើតថ្មី
-        resetInputFields();
-        document.getElementById('input-row').style.display = 'table-row';
+        resetFields();
     }
 
     function editTask(task) {
-        editingTaskId = task.id; // កំណត់ ID សម្រាប់ Update
+        editingTaskId = task.id;
         document.getElementById('new-no').value = task.no;
         document.getElementById('new-description').value = task.description;
         document.getElementById('new-status').value = task.status;
         document.getElementById('new-date').value = task.date;
-        document.getElementById('input-row').style.display = 'table-row';
+        window.scrollTo(0, document.body.scrollHeight); // រំកិលចុះក្រោមទៅកន្លែងកែ
     }
 
     async function saveNewTask() {
@@ -157,27 +159,28 @@
             no: document.getElementById('new-no').value,
             description: document.getElementById('new-description').value,
             status: document.getElementById('new-status').value,
-            date: document.getElementById('new-date').value,
-            note: "" 
+            date: document.getElementById('new-date').value
         };
 
         const endpoint = editingTaskId ? '/update_task' : '/tasks';
-
         await fetch(endpoint, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(taskData)
         });
 
+        editingTaskId = null;
         loadTasks();
     }
 
-    function resetInputForm() {
-        document.getElementById('input-row').style.display = 'none';
-        resetInputFields();
+    async function deleteTask(taskId) {
+        if(confirm("លុបការងារនេះ?")) {
+            await fetch(`/delete_task/${taskId}`, { method: 'DELETE' });
+            loadTasks();
+        }
     }
 
-    function resetInputFields() {
+    function resetFields() {
         document.getElementById('new-no').value = '';
         document.getElementById('new-description').value = '';
         document.getElementById('new-date').value = new Date().toISOString().split('T')[0];

@@ -23,6 +23,7 @@ app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], all
 async def read_index():
     return FileResponse("index.html")
 
+# --- Projects ---
 @app.post("/projects")
 def add_project(data: dict):
     db.collection("projects").document(data['id']).set({"id": data['id'], "date": data['date']})
@@ -32,6 +33,7 @@ def add_project(data: dict):
 def get_projects():
     return {"projects": [doc.to_dict() for doc in db.collection("projects").stream()]}
 
+# --- Tasks ---
 @app.post("/tasks")
 def add_task(task: dict = Body(...)):
     db.collection("tasks").add({
@@ -47,19 +49,19 @@ def add_task(task: dict = Body(...)):
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
     tasks = []
+    # ប្រើ .where() ត្រឹមត្រូវដើម្បីទាញយកតាម project_id
     for doc in db.collection("tasks").where("project_id", "==", project_id).stream():
-        task_data = doc.to_dict()
-        task_data['id'] = doc.id  # បន្ថែម ID របស់ Firestore Document
-        tasks.append(task_data)
+        t = doc.to_dict()
+        t['id'] = doc.id
+        tasks.append(t)
     return {"tasks": tasks}
 
 @app.post("/update_task")
 def update_task(task: dict = Body(...)):
-    task_id = task.get('id') # អ្នកត្រូវផ្ញើ ID មកពី Frontend
+    task_id = task.get('id')
     if not task_id:
-        return {"error": "Missing task ID"}, 400
+        return {"error": "Missing task ID"}
     
-    # ប្រើ .document(id).set() ដើម្បី Update ទិន្នន័យចាស់
     db.collection("tasks").document(task_id).set({
         "project_id": task.get('project_id'),
         "no": task.get('no'),
@@ -68,5 +70,9 @@ def update_task(task: dict = Body(...)):
         "date": task.get('date'),
         "note": task.get('note')
     }, merge=True)
-    
-    return {"message": "Task updated successfully"}
+    return {"message": "Task updated"}
+
+@app.delete("/delete_task/{task_id}")
+def delete_task(task_id: str):
+    db.collection("tasks").document(task_id).delete()
+    return {"message": "Deleted"}
