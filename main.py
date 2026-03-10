@@ -47,3 +47,20 @@ def add_task(task: dict = Body(...)):
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
     return {"tasks": [doc.to_dict() for doc in db.collection("tasks").where("project_id", "==", project_id).stream()]}
+@app.post("/update_task")
+def update_task(task: dict = Body(...)):
+    task_id = task.get('id') # អ្នកត្រូវផ្ញើ ID មកពី Frontend
+    if not task_id:
+        return {"error": "Missing task ID"}, 400
+    
+    # ប្រើ .document(id).set() ដើម្បី Update ទិន្នន័យចាស់
+    db.collection("tasks").document(task_id).set({
+        "project_id": task.get('project_id'),
+        "no": task.get('no'),
+        "description": task.get('description'),
+        "status": task.get('status'),
+        "date": task.get('date'),
+        "note": task.get('note')
+    }, merge=True)
+    
+    return {"message": "Task updated successfully"}
