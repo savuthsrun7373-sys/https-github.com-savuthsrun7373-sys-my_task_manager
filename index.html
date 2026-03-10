@@ -14,6 +14,19 @@
         th { background-color: #2980b9; color: white; }
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
+
+        /* កំណត់ទំហំសម្រាប់ Table Columns */
+        #task-table-body td:nth-child(1), #task-table-body th:nth-child(1) {
+            width: 50px;  /* No */
+            text-align: center;
+        }
+        #task-table-body td:nth-child(3), #task-table-body th:nth-child(3) {
+            width: 100px; /* Status */
+        }
+        #task-table-body td:nth-child(2), #task-table-body th:nth-child(2) {
+            width: auto;  /* Desc នឹងយកទំហំដែលនៅសល់ទាំងអស់ */
+        }
+
     </style>
 </head>
 <body>
