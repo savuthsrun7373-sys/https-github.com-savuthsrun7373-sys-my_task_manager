@@ -33,47 +33,32 @@
 <div class="container">
     <div id="project-view">
         <h2>បញ្ជី Project</h2>
-        <button class="btn-new" onclick="toggleProjectForm()">+ New Project</button>
-        
-        <div id="project-form-container" style="display: none; margin-bottom: 15px;">
-            <input type="text" id="new_project_id" placeholder="Project ID">
-            <input type="date" id="new_project_date">
-            <button class="btn-save" onclick="createProject()">រក្សាទុក Project</button>
-        </div>
-
-        <div id="project-list"></div>
-    </div>
-
-    <hr style="margin: 20px 0;">
-
-    <div id="task-section" style="display:none;">
-        <h2 id="current-project-title" style="color: #2c3e50;"></h2>
         <table>
             <thead>
-                <tr>
-                    <th style="width: 50px;">No</th>
-                    <th>Desc</th>
-                    <th style="width: 100px;">Status</th>
-                    <th style="width: 110px;">Date</th>
-                    <th style="width: 130px;">Action</th>
-                </tr>
+                <tr><th>No</th><th>Desc</th><th>Status</th></tr>
+            </thead>
+            <tbody id="project-summary-body"></tbody>
+        </table>
+    </div>   
+
+    <div id="task-view" style="display:none;">
+        <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
+        <h2 id="current-project-title"></h2>
+        <table>
+            <thead>
+                <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
             </thead>
             <tbody id="task-table-body"></tbody>
-            <tr id="input-row" style="background-color: #f9f9f9;">
-                <td><input type="text" id="new-no"></td>
-                <td><input type="text" id="new-description"></td>
-                <td>
-                    <select id="new-status">
-                        <option value="Pending">Pending</option>
-                        <option value="Processing">Processing</option>
-                        <option value="Done">Done</option>
-                    </select>
-                </td>
-                <td><input type="date" id="new-date"></td>
-                <td>---</td>
-            </tr>
         </table>
-        <button class="btn-save" onclick="saveNewTask()">Save/Update Task</button>
+        
+        <div id="input-form">
+            <input type="text" id="new-no" placeholder="No">
+            <input type="text" id="new-description" placeholder="Desc">
+            <select id="new-status"><option>Pending</option><option>Processing</option><option>Done</option></select>
+            <input type="date" id="new-date">
+            <input type="text" id="new-note" placeholder="Note">
+            <button onclick="saveNewTask()" class="btn-save">Save/Update Task</button>
+        </div>
     </div>
 </div>
 
