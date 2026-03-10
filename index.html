@@ -7,12 +7,35 @@
     <style>
         /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .container { 
+            width: 95%; /* ប្រើ 95% ដើម្បីឱ្យវារត់ពេញអេក្រង់ល្មម */
+            max-width: 1200px; /* បង្កើនទំហំអតិបរមា */
+            margin: auto; 
+            background: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+        }
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; }
 
-        /* ការកំណត់តារាងទូទៅ */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: auto; }
+        /* កំណត់តារាងក្នុង Project Card */
+            .project-card table { 
+                width: 100%; 
+                table-layout: fixed; /* ប្រើ fixed ដើម្បីគ្រប់គ្រងទំហំ */
+                border-collapse: collapse;
+                font-size: 11px;
+            }
+
+            /* កំណត់ Column ក្នុង Project Card */
+            .project-card table th:nth-child(1), .project-card table td:nth-child(1) { width: 30px; } /* No */
+            .project-card table th:nth-child(3), .project-card table td:nth-child(3) { width: 60px; } /* Status */
+
+            /* Desc: នេះគឺជាកន្លែងដែលយើងចង់ឱ្យវារីកធំ */
+            .project-card table th:nth-child(2), .project-card table td:nth-child(2) { 
+                width: auto; 
+                word-break: break-all; /* ជួយកាត់ពាក្យឱ្យចូលក្នុងកន្លែង */
+            }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
         th { background-color: #2980b9; color: white; }
 
@@ -191,455 +214,104 @@
 
 
    async function loadProjects() {
-
-
-
         const res = await fetch('/get_projects');
-
-
-
         const data = await res.json();
-
-
-
         const list = document.getElementById('project-list');
-
-
-
         list.innerHTML = '';
-
-
-
-       
-
-
-
         for (const p of data.projects) {
-
-
-
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
-
-
-
             const taskData = await taskRes.json();
-
-
-
-           
-
-
-
             // ធ្វើការ Sort នៅទីនេះមុនពេលបង្ហាញ
-
-
-
             let tasks = taskData.tasks || [];
-
-
-
             tasks.sort((a, b) => {
-
-
-
                 // ១. យក "Done" ទៅលើគេ
-
-
-
                 if (a.status === 'Done' && b.status !== 'Done') return -1;
-
-
-
                 if (a.status !== 'Done' && b.status === 'Done') return 1;
-
-
-
                 // ២. បន្ទាប់មកតម្រៀបតាមលេខរៀង (No) ពីតូចទៅធំ
-
-
-
                 return parseInt(a.no) - parseInt(b.no);
-
-
-
             });
-
-
-
-           
-
-
-
             const card = document.createElement('div');
-
-
-
             card.className = 'project-card';
-
-
-
             card.onclick = () => openProject(p.id);
-
-
-
-           
-
-
-
             card.innerHTML = `
-
-
-
                 <h3>Sub: ${p.id}</h3>
-
-
-
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-
-
-
-                <table style="pointer-events: none; font-size: 11px;">
-
-
-
-                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
-
-
-
+                <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
-
-
-
                         ${tasks.map(t => `
-
-
-
                             <tr>
-
-
-
                                 <td>${t.no}</td>
-
-
-
-                                <td>${t.description.substring(0, 15)}...</td>
-
-
-
+                                <td>${t.description}</td> 
                                 <td>${t.status}</td>
-
-
-
                             </tr>
-
-
-
                         `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
-
-
-
                     </tbody>
-
-
-
                 </table>
-
-
-
             `;
-
-
-
             list.appendChild(card);
-
-
-
         }
-
-
-
     }
-
-
-
-
-
-
-
     async function openProject(id) {
-
-
-
         activeProjectId = id;
-
-
-
         document.getElementById('project-view').style.display = 'none';
-
-
-
         document.getElementById('task-view').style.display = 'block';
-
-
-
         document.getElementById('current-project-title').innerText = "Sub: " + id;
-
-
-
-       
-
-
-
         const res = await fetch(`/tasks?project_id=${id}`);
-
-
-
         const data = await res.json();
-
-
-
         currentTasks = data.tasks || [];
-
-
-
-       
-
-
-
         sortAndRender();
-
-
-
     }
-
-
-
-
-
-
 
     function sortAndRender() {
-
-
-
         currentTasks.sort((a, b) => {
-
-
-
             if (a.status === 'Done' && b.status !== 'Done') return -1;
-
-
-
             if (a.status !== 'Done' && b.status === 'Done') return 1;
-
-
-
             return parseInt(a.no) - parseInt(b.no);
-
-
-
         });
-
-
-
-       
-
-
-
         const tbody = document.getElementById('task-table-body');
-
-
-
         tbody.innerHTML = currentTasks.map(t => `
-
-
-
             <tr>
-
-
-
                 <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td><td>${t.date}</td><td>${t.note}</td>
-
-
-
                 <td><button onclick="editTask('${t.no}')">Edit</button></td>
-
-
-
             </tr>
-
-
-
         `).join('');
-
-
-
     }
-
-
-
-
-
-
-
     function toggleNewRow() {
-
-
-
         document.getElementById('new-task-row').style.display = 'table-row';
-
-
-
         document.getElementById('plus-btn').style.display = 'none';
-
-
-
         document.getElementById('save-btn').style.display = 'inline';
-
-
-
     }
-
-
-
-
-
-
 
     function editTask(no) {
-
-
-
         const task = currentTasks.find(t => t.no === no);
-
-
-
         if (!task) return;
-
-
-
         toggleNewRow();
-
-
-
         document.getElementById('new-no').value = task.no;
-
-
-
         document.getElementById('new-description').value = task.description;
-
-
-
         document.getElementById('new-status').value = task.status;
-
-
-
         document.getElementById('new-date').value = task.date;
-
-
-
         document.getElementById('new-note').value = task.note;
-
-
-
     }
-
-
-
-
-
-
 
     async function saveNewTask() {
-
-
-
         const payload = {
-
-
-
             project_id: activeProjectId,
-
-
-
             no: document.getElementById('new-no').value,
-
-
-
             description: document.getElementById('new-description').value,
-
-
-
             status: document.getElementById('new-status').value,
-
-
-
             date: document.getElementById('new-date').value,
-
-
-
             note: document.getElementById('new-note').value
-
-
-
         };
-
-
-
         await fetch('/tasks', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-
-
-
         document.getElementById('new-task-row').style.display = 'none';
-
-
-
         document.getElementById('save-btn').style.display = 'none';
-
-
-
         document.getElementById('plus-btn').style.display = 'inline';
-
-
-
         openProject(activeProjectId);
-
-
-
     }
-
-
-
-
-
-
-
     function showProjects() { document.getElementById('project-view').style.display = 'block'; document.getElementById('task-view').style.display = 'none'; }
-
-
-
     function toggleProjectForm() { const f = document.getElementById('project-form-container'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
-
-
-
     async function createProject() { await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: document.getElementById('new_project_id').value, date: document.getElementById('new_project_date').value}) }); loadProjects(); toggleProjectForm(); }
-
-
-
-
-
-
-
     window.onload = loadProjects;
-
-
-
 </script>
-
-
-
 </body>
-
-
-
 </html>
