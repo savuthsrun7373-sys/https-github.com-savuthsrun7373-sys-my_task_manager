@@ -46,7 +46,13 @@ def add_task(task: dict = Body(...)):
 
 @app.get("/tasks")
 def get_tasks(project_id: str = Query(...)):
-    return {"tasks": [doc.to_dict() for doc in db.collection("tasks").where("project_id", "==", project_id).stream()]}
+    tasks = []
+    for doc in db.collection("tasks").where("project_id", "==", project_id).stream():
+        task_data = doc.to_dict()
+        task_data['id'] = doc.id  # បន្ថែម ID របស់ Firestore Document
+        tasks.append(task_data)
+    return {"tasks": tasks}
+
 @app.post("/update_task")
 def update_task(task: dict = Body(...)):
     task_id = task.get('id') # អ្នកត្រូវផ្ញើ ID មកពី Frontend

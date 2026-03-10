@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
     <style>
-        /* Base Styles */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 100%; max-width: 600px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* Table Styles */
+        .container { width: 100%; max-width: 800px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: fixed; }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; word-wrap: break-word; }
         th { background-color: #2980b9; color: white; }
-
-        /* Form Elements */
-        input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
+        input, select, button { width: 100%; padding: 8px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
+        .project-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
+        .project-item:hover { background-color: #f0f0f0; }
+        .edit-btn { background-color: #f39c12; color: white; padding: 4px 8px; width: auto; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -24,24 +22,30 @@
 <div class="container">
     <div id="project-view">
         <h2>បញ្ជី Project</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
-        <div id="project-form-container" style="display: none; margin-top: 10px;">
-            <input type="text" id="new_project_id" placeholder="Project ID">
+        <button onclick="toggleProjectForm()">+ New Project</button>
+        <div id="project-form-container" style="display: none; margin-top: 10px; border: 1px solid #ccc; padding: 10px;">
+            <input type="text" id="new_project_id" placeholder="Project ID (ឈ្មោះ)">
             <input type="date" id="new_project_date">
-            <button onclick="createProject()">រក្សាទុក</button>
+            <button onclick="createProject()" style="background-color: #27ae60;">រក្សាទុក</button>
         </div>
         <div id="project-list"></div>
     </div>
 
     <div id="task-view" style="display:none;">
-        <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
+        <button onclick="showProjects()" style="background-color: #7f8c8d; width: auto;">⬅️ ត្រឡប់ក្រោយ</button>
         <h2 id="current-project-title"></h2>
         <table>
             <thead>
-                <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
+                <tr>
+                    <th style="width: 40px;">No</th>
+                    <th>Desc</th>
+                    <th style="width: 100px;">Status</th>
+                    <th style="width: 100px;">Date</th>
+                    <th style="width: 80px;">Action</th>
+                </tr>
             </thead>
             <tbody id="task-table-body"></tbody>
-            <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
+            <tr id="input-row" style="display:none; background-color: #e8f4fd;">
                 <td><input type="text" id="new-no"></td>
                 <td><input type="text" id="new-description"></td>
                 <td>
@@ -52,69 +56,134 @@
                     </select>
                 </td>
                 <td><input type="date" id="new-date"></td>
-                <td><input type="text" id="new-note"></td>
+                <td><button onclick="saveNewTask()" id="save-btn" style="background-color: #27ae60;">Save</button></td>
             </tr>
         </table>
-        <button onclick="toggleNewRow()" id="plus-btn">+</button>
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save/Update</button>
+        <button onclick="toggleNewRow()" id="plus-btn" style="margin-top: 10px;">+ បន្ថែមការងារថ្មី</button>
     </div>
 </div>
 
 <script>
     let activeProjectId = '';
-    let currentTasks = [];
+    let editingTaskId = null; // សំខាន់៖ ទុកសម្រាប់ដឹងថា Edit ឬ Create
 
-    // ស្តង់ដារមុខងារផ្ទុកទិន្នន័យ
+    // --- គ្រប់គ្រង Project ---
+    function toggleProjectForm() {
+        const el = document.getElementById('project-form-container');
+        el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    }
+
     async function loadProjects() {
         const res = await fetch('/get_projects');
         const data = await res.json();
         const list = document.getElementById('project-list');
         list.innerHTML = '';
-        
-        for (const p of data.projects) {
-            // ... (Logic ដូចដើម)
-        }
-    }
-
-    // មុខងារសម្រាប់ Sort ទិន្នន័យ
-    function sortTasks(tasks) {
-        return tasks.sort((a, b) => {
-            if (a.status === 'Done' && b.status !== 'Done') return -1;
-            if (a.status !== 'Done' && b.status === 'Done') return 1;
-            return parseInt(a.no) - parseInt(b.no);
+        data.projects.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'project-item';
+            div.innerHTML = `<span><strong>${p.id}</strong> - ${p.date}</span>`;
+            div.onclick = () => showTasks(p.id);
+            list.appendChild(div);
         });
     }
 
-    window.onload = loadProjects;
-// ពេលបង្ហាញទិន្នន័យក្នុងតារាង
-taskRow.innerHTML = `
-    <td>${task.no}</td>
-    <td>${task.description}</td>
-    ...
-    <button onclick="editTask('${task.id}')">Edit</button>
-`;
+    async function createProject() {
+        const id = document.getElementById('new_project_id').value;
+        const date = document.getElementById('new_project_date').value;
+        if(!id || !date) return alert("សូមបំពេញទិន្នន័យ");
+        
+        await fetch('/projects', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({id, date})
+        });
+        document.getElementById('new_project_id').value = '';
+        toggleProjectForm();
+        loadProjects();
+    }
 
-// មុខងារ Save/Update នៅ Frontend
+    // --- គ្រប់គ្រង Task ---
+    function showProjects() {
+        document.getElementById('project-view').style.display = 'block';
+        document.getElementById('task-view').style.display = 'none';
+    }
+
+    async function showTasks(projectId) {
+        activeProjectId = projectId;
+        document.getElementById('current-project-title').innerText = "Project: " + projectId;
+        document.getElementById('project-view').style.display = 'none';
+        document.getElementById('task-view').style.display = 'block';
+        loadTasks();
+    }
+
+    async function loadTasks() {
+        const res = await fetch(`/tasks?project_id=${activeProjectId}`);
+        const data = await res.json();
+        const tbody = document.getElementById('task-table-body');
+        tbody.innerHTML = '';
+        
+        data.tasks.forEach(task => {
+            const row = tbody.insertRow();
+            row.innerHTML = `
+                <td>${task.no}</td>
+                <td>${task.description}</td>
+                <td>${task.status}</td>
+                <td>${task.date}</td>
+                <td><button class="edit-btn" onclick='editTask(${JSON.stringify(task)})'>Edit</button></td>
+            `;
+        });
+        resetInputForm();
+    }
+
+    function toggleNewRow() {
+        editingTaskId = null; // បើចុច "+" គឺបង្កើតថ្មី
+        resetInputFields();
+        document.getElementById('input-row').style.display = 'table-row';
+    }
+
+    function editTask(task) {
+        editingTaskId = task.id; // កំណត់ ID សម្រាប់ Update
+        document.getElementById('new-no').value = task.no;
+        document.getElementById('new-description').value = task.description;
+        document.getElementById('new-status').value = task.status;
+        document.getElementById('new-date').value = task.date;
+        document.getElementById('input-row').style.display = 'table-row';
+    }
+
     async function saveNewTask() {
-        const data = {
-            id: editingTaskId, // បើ null គឺបង្កើតថ្មី បើមានលេខ គឺ Update
+        const taskData = {
+            id: editingTaskId,
             project_id: activeProjectId,
             no: document.getElementById('new-no').value,
             description: document.getElementById('new-description').value,
-            // ... ផ្សេងៗទៀត
+            status: document.getElementById('new-status').value,
+            date: document.getElementById('new-date').value,
+            note: "" 
         };
 
         const endpoint = editingTaskId ? '/update_task' : '/tasks';
-        
+
         await fetch(endpoint, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(taskData)
         });
-        
-        loadTasks(); // ផ្ទុកទិន្នន័យឡើងវិញ
+
+        loadTasks();
     }
 
+    function resetInputForm() {
+        document.getElementById('input-row').style.display = 'none';
+        resetInputFields();
+    }
+
+    function resetInputFields() {
+        document.getElementById('new-no').value = '';
+        document.getElementById('new-description').value = '';
+        document.getElementById('new-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    window.onload = loadProjects;
 </script>
 </body>
 </html>
