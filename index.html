@@ -41,24 +41,29 @@
         <h2 id="current-project-title"></h2>
 
         <table>
-            <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
-            <tbody id="task-table-body"></tbody>
+            <thead>
+                <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th></tr>
+            </thead>
+            <tbody id="task-table-body">
+                </tbody>
+            <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
+                <td><input type="text" id="new-no" style="width: 40px;"></td>
+                <td><input type="text" id="new-description" style="width: 100%;"></td>
+                <td>
+                    <select id="new-status">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Done">Done</option>
+                    </select>
+                </td>
+                <td><input type="date" id="new-date"></td>
+                <td><input type="text" id="new-note" style="width: 100%;"></td>
+            </tr>
         </table>
 
-        <button id="add-task-btn" onclick="toggleTaskForm()" style="margin-top:10px; width: 50px;">+</button>
-
-        <form id="task-form" style="display:none; margin-top:10px; border:1px solid #ccc; padding:10px;">
-            <input type="text" id="no" placeholder="No" required>
-            <input type="text" id="description" placeholder="Description" required>
-            <select id="status">
-                <option value="Pending">Pending</option>
-                <option value="Processing">Processing</option>
-                <option value="Done">Done</option>
-            </select>
-            <input type="date" id="date" required>
-            <input type="text" id="note" placeholder="Note">
-            <button type="submit">រក្សាទុក</button>
-        </form>
+        <button onclick="toggleNewRow()" id="plus-btn" style="margin-top: 10px;">+</button>
+        <button onclick="saveNewTask()" id="save-btn" style="display:none; margin-top: 10px; background-color: #27ae60;">Save</button>
+        
     </div>
 </div>
 
@@ -115,9 +120,18 @@
                 <table style="pointer-events: none; font-size: 12px;"> 
                     <thead>
                         <tr>
-                            <th>No</th><th>Desc</th><th>Status</th> </tr>
+                            <th>No</th><th>Desc</th><th>Status</th>
+                        </tr>
                     </thead>
-                    <tbody>${taskRows}</tbody>
+                    <tbody>
+                        ${taskData.tasks.map(t => `
+                            <tr>
+                                <td>${t.no || ''}</td>
+                                <td>${t.description || ''}</td>
+                                <td>${t.status || ''}</td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
                 </table>
             `;
             list.appendChild(card);
@@ -206,6 +220,49 @@
     }
 
     window.onload = loadProjects;
+
+    function toggleNewRow() {
+    const row = document.getElementById('new-task-row');
+    const plusBtn = document.getElementById('plus-btn');
+    const saveBtn = document.getElementById('save-btn');
+    
+    // បង្ហាញ Row ថ្មី
+    row.style.display = 'table-row';
+    plusBtn.style.display = 'none';
+    saveBtn.style.display = 'inline';
+
+    // ស្វ័យប្រវត្តិដាក់លេខរៀង (យកចំនួន row ដែលមានស្រាប់បូកនឹង 1)
+    const tbody = document.getElementById('task-table-body');
+    const nextNo = (tbody.rows.length + 1).toString().padStart(2, '0');
+    document.getElementById('new-no').value = nextNo;
+}
+
+async function saveNewTask() {
+    const payload = {
+        project_id: activeProjectId,
+        no: document.getElementById('new-no').value,
+        description: document.getElementById('new-description').value,
+        status: document.getElementById('new-status').value,
+        date: document.getElementById('new-date').value,
+        note: document.getElementById('new-note').value
+    };
+
+    // ផ្ញើទៅ Backend
+    await fetch('/tasks', { 
+        method: 'POST', 
+        headers: {'Content-Type': 'application/json'}, 
+        body: JSON.stringify(payload) 
+    });
+
+    // បិទ Row វិញ រួច Refresh តារាង
+    document.getElementById('new-task-row').style.display = 'none';
+    document.getElementById('save-btn').style.display = 'none';
+    document.getElementById('plus-btn').style.display = 'inline';
+    
+    openProject(activeProjectId); 
+}
+
+
 </script>
 </body>
 </html>
