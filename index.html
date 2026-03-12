@@ -176,26 +176,18 @@
             note: document.getElementById('new-note').value
         };
 
-        if (editingTaskNo) {
-            // UPDATE
-            await fetch('/tasks', {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-        } else {
-            // CREATE
-            await fetch('/tasks', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify(payload)
-            });
-        }
+        await fetch('/tasks', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
 
         editingTaskNo = null;
+
         document.getElementById('new-task-row').style.display = 'none';
         document.getElementById('save-btn').style.display = 'none';
         document.getElementById('plus-btn').style.display = 'inline';
+
         openProject(activeProjectId);
     }
 
