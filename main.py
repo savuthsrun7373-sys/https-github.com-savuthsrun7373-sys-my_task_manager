@@ -72,10 +72,11 @@ def update_task(task: dict = Body(...)):
     }, merge=True)
     return {"message": "Task updated"}
 
+# --- Tasks ---
 @app.post("/tasks")
-def save_task(task: dict = Body(...)):
+def handle_task(task: dict = Body(...)):
     tasks_ref = db.collection("tasks")
-    task_id = task.get("id")
+    task_id = task.get("id")  # This will be None for new tasks
     
     data = {
         "project_id": task.get("project_id"),
@@ -87,10 +88,10 @@ def save_task(task: dict = Body(...)):
     }
 
     if task_id:
-        # Update existing document
+        # Update existing
         tasks_ref.document(task_id).set(data, merge=True)
         return {"message": "Task updated"}
     else:
-        # Create new document
+        # Create new
         tasks_ref.add(data)
         return {"message": "Task created"}

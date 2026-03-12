@@ -78,19 +78,47 @@
 <script>
     let activeProjectId = '';
     let currentTasks = [];
-    let editingDocId = null; // New global variable
+    let editingDocId = null; // Global to track the Firestore ID
 
     function editTask(id) {
         const task = currentTasks.find(t => t.id === id);
         if (!task) return;
 
-        editingDocId = id; // Store the ID for the save function
+        editingDocId = id; // Set the ID for the save operation
         toggleNewRow();
+        
+        // Fill the inputs
         document.getElementById('new-no').value = task.no;
         document.getElementById('new-description').value = task.description;
         document.getElementById('new-status').value = task.status;
         document.getElementById('new-date').value = task.date;
         document.getElementById('new-note').value = task.note;
+    }
+
+    async function saveNewTask() {
+        const payload = {
+            id: editingDocId, // Pass the ID. If null, server creates new.
+            project_id: activeProjectId,
+            no: document.getElementById('new-no').value,
+            description: document.getElementById('new-description').value,
+            status: document.getElementById('new-status').value,
+            date: document.getElementById('new-date').value,
+            note: document.getElementById('new-note').value
+        };
+
+        await fetch('/tasks', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        // Reset UI
+        editingDocId = null;
+        document.getElementById('new-task-row').style.display = 'none';
+        document.getElementById('save-btn').style.display = 'none';
+        document.getElementById('plus-btn').style.display = 'inline';
+        
+        openProject(activeProjectId); // Refresh the list
     }
 
     async function saveNewTask() {
