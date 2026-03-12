@@ -86,5 +86,49 @@ def update_task():
     """, (data['description'], data['status'], data['date'], data['note'], project_id, no))
 
     conn.commit()
-
     return jsonify({"status":"updated"})
+
+@app.route('/tasks', methods=['POST'])
+def save_task():
+    data = request.json
+
+    project_id = data['project_id']
+    no = data['no']
+
+    cur = conn.cursor()
+
+    # check existing task
+    cur.execute("SELECT * FROM tasks WHERE project_id=%s AND no=%s", (project_id, no))
+    existing = cur.fetchone()
+
+    if existing:
+        # UPDATE
+        cur.execute("""
+            UPDATE tasks
+            SET description=%s, status=%s, date=%s, note=%s
+            WHERE project_id=%s AND no=%s
+        """, (
+            data['description'],
+            data['status'],
+            data['date'],
+            data['note'],
+            project_id,
+            no
+        ))
+    else:
+        # INSERT
+        cur.execute("""
+            INSERT INTO tasks(project_id,no,description,status,date,note)
+            VALUES(%s,%s,%s,%s,%s,%s)
+        """, (
+            project_id,
+            no,
+            data['description'],
+            data['status'],
+            data['date'],
+            data['note']
+        ))
+
+    conn.commit()
+
+    return jsonify({"status":"ok"})
