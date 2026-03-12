@@ -23,13 +23,14 @@
         cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
         }       
         .project-card button {
-            width: 100%; /* ឱ្យប៊ូតុងពេញទទឹងកាត */
-            padding: 10px;
+            width: auto;             /* ដក 100% ចេញ ហើយដាក់ auto ឬគ្រាន់តែលុបចោល */
+            padding: 5px 15px;      /* បន្ថយ padding ឱ្យសមល្មម */
             background-color: #3498db;
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            white-space: nowrap;    /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
         }
 
         /* ជួរឈរ Desc ក្នុង Project Card: ឱ្យវាធំតាមកន្លែងដែលសល់ */
@@ -178,23 +179,21 @@
                     </button>
                 </div>
                 <p style="margin-top: 10px;">កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+                    <tbody>
+                        ${tasks.map(t => `
+                            <tr>
+                                <td>${t.no}</td>
+                                <td>${t.description}</td>
+                                <td>${t.status}</td>
+                            </tr>
+                        `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
+                    </tbody>
+                </table>            
             `;
             list.appendChild(card);
         }
     }
-
-    // <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                // <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
-                //     <tbody>
-                //         ${tasks.map(t => `
-                //             <tr>
-                //                 <td>${t.no}</td>
-                //                 <td>${t.description}</td>
-                //                 <td>${t.status}</td>
-                //             </tr>
-                //         `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
-                //     </tbody>
-                // </table>
 
     async function openProject(id) {
         activeProjectId = id;
