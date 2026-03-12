@@ -188,12 +188,21 @@
     }
 
     function sortAndRender() {
-        // ... sorting logic ...
+        // ១. តម្រៀបទិន្នន័យក្នុង currentTasks មុនពេលបង្ហាញ
+        currentTasks.sort((a, b) => {
+            // តម្រៀបតាមលេខរៀង (No) ពីតូចទៅធំ
+            return parseInt(a.no) - parseInt(b.no);
+        });
+
+        // ២. បង្ហាញទិន្នន័យដែលបានតម្រៀបរួច
         const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = currentTasks.map(t => `
             <tr>
-                <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td>
-                <td>${t.date}</td><td>${t.note}</td>
+                <td>${t.no}</td>
+                <td>${t.description}</td>
+                <td>${t.status}</td>
+                <td>${t.date}</td>
+                <td>${t.note}</td>
                 <td class="action-buttons">
                     <button onclick="editTask('${t.id}')">Edit</button>
                     <button onclick="deleteTask('${t.id}')" style="background:#e74c3c;">Delete</button>
@@ -202,21 +211,27 @@
         `).join('');
     }
 
-    function toggleNewRow() {
+    function toggleNewRow(){
 
-        document.getElementById('new-task-row').style.display = 'table-row';
-        document.getElementById('plus-btn').style.display = 'none';
-        document.getElementById('save-btn').style.display = 'inline';
+    document.getElementById('new-task-row').style.display='table-row'
+    document.getElementById('plus-btn').style.display='none'
+    document.getElementById('save-btn').style.display='inline'
 
-        // Auto No
-        let maxNo = 0;
+    let maxNo = 0
 
-        currentTasks.forEach(t => {
-            const n = parseInt(t.no);
-            if (n > maxNo) maxNo = n;
-        });
+    currentTasks.forEach(t => {
+        const n = parseInt(t.no) || 0
+        if(n > maxNo){
+            maxNo = n
+        }
+    })
 
-        document.getElementById('new-no').value = maxNo + 1;
+    let nextNo = maxNo + 1
+
+    // make 01 02 03 format
+    document.getElementById('new-no').value =
+    String(nextNo).padStart(2,'0')
+
     }
 
  
