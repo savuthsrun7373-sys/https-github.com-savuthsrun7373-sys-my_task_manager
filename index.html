@@ -60,7 +60,7 @@
             </thead>
             <tbody id="task-table-body"></tbody>
             <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
-                <td><input type="text" id="new-no"></td>
+                <td><input type="text" id="new-no" readonly></td>
                 <td><input type="text" id="new-description"></td>
                 <td>
                     <select id="new-status">
@@ -193,9 +193,20 @@
     }
 
     function toggleNewRow() {
+
         document.getElementById('new-task-row').style.display = 'table-row';
         document.getElementById('plus-btn').style.display = 'none';
         document.getElementById('save-btn').style.display = 'inline';
+
+        // Auto No
+        let maxNo = 0;
+
+        currentTasks.forEach(t => {
+            const n = parseInt(t.no);
+            if (n > maxNo) maxNo = n;
+        });
+
+        document.getElementById('new-no').value = maxNo + 1;
     }
 
  
