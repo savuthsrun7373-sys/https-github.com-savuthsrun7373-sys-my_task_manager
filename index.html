@@ -7,7 +7,16 @@
     <style>
         /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 95%; max-width: 1200px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }       
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px; /* បង្កើន padding ឱ្យមើលទៅធំទូលាយ */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-sizing: border-box; /* សំខាន់ណាស់៖ ជួយឱ្យ Padding មិនធ្វើឱ្យ Container ហួសទំហំ */
+        }
 
         /* ការកំណត់ទូទៅសម្រាប់តារាង */
 
@@ -18,10 +27,25 @@
 
 
         /* ការកំណត់សម្រាប់ Project List Cards */
-        #project-list { display: grid; gap: 10px; margin-top: 20px; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; 
+        #project-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%; /* ធានាថាវាស្មើនឹង Container */
+        }
+        .project-card {
+            background-color: #fcfcfc; /* ពណ៌ប្រផេះស្រាលណាស់ */
+            border: 1px solid #e0e0e0; /* បន្ថែមបន្ទាត់ព្រំដែនស្តើង */
+            padding: 20px;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            transition: box-shadow 0.3s ease; /* បន្ថែម Effect ពេលយក Mouse ដាក់ពីលើ */
         cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
         }   
+        .project-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* បង្ហាញស្រមោលតិចៗពេល Hover */
+        }
 
         #project-view button {
             width: auto; 
