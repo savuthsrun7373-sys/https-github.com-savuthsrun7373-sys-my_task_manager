@@ -71,64 +71,38 @@ def update_task(task: dict = Body(...)):
         "note": task.get('note')
     }, merge=True)
     return {"message": "Task updated"}
-@app.route('/tasks', methods=['PUT'])
-def update_task():
-    data = request.json
 
-    project_id = data['project_id']
-    no = data['no']
+@app.post("/tasks")
+def save_task(task: dict = Body(...)):
 
-    # update database
-    cursor.execute("""
-        UPDATE tasks
-        SET description=%s, status=%s, date=%s, note=%s
-        WHERE project_id=%s AND no=%s
-    """, (data['description'], data['status'], data['date'], data['note'], project_id, no))
+    project_id = task.get("project_id")
+    no = task.get("no")
 
-    conn.commit()
-    return jsonify({"status":"updated"})
-
-@app.route('/tasks', methods=['POST'])
-def save_task():
-    data = request.json
-
-    project_id = data['project_id']
-    no = data['no']
-
-    cur = conn.cursor()
+    tasks_ref = db.collection("tasks")
 
     # check existing task
-    cur.execute("SELECT * FROM tasks WHERE project_id=%s AND no=%s", (project_id, no))
-    existing = cur.fetchone()
+    existing = tasks_ref.where("project_id", "==", project_id).where("no", "==", no).stream()
 
-    if existing:
+    doc = None
+    for d in existing:
+        doc = d
+        break
+
+    data = {
+        "project_id": project_id,
+        "no": no,
+        "description": task.get("description"),
+        "status": task.get("status"),
+        "date": task.get("date"),
+        "note": task.get("note")
+    }
+
+    if doc:
         # UPDATE
-        cur.execute("""
-            UPDATE tasks
-            SET description=%s, status=%s, date=%s, note=%s
-            WHERE project_id=%s AND no=%s
-        """, (
-            data['description'],
-            data['status'],
-            data['date'],
-            data['note'],
-            project_id,
-            no
-        ))
+        tasks_ref.document(doc.id).set(data, merge=True)
+        return {"message": "Task updated"}
+
     else:
-        # INSERT
-        cur.execute("""
-            INSERT INTO tasks(project_id,no,description,status,date,note)
-            VALUES(%s,%s,%s,%s,%s,%s)
-        """, (
-            project_id,
-            no,
-            data['description'],
-            data['status'],
-            data['date'],
-            data['note']
-        ))
-
-    conn.commit()
-
-    return jsonify({"status":"ok"})
+        # CREATE
+        tasks_ref.add(data)
+        return {"message": "Task created"}
