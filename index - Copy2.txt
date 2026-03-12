@@ -7,7 +7,31 @@
     <style>
         /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 95%; max-width: 1200px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }       
+        /* ធានាថា container មិនរុញលើសអេក្រង់ */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-x: hidden; /* បិទការរុញផ្ដេករបស់ Container */
+        }
+        /* ធានាថាគ្រប់ Child element មិនហួសទំហំ Container */
+        * {
+            box-sizing: border-box;
+        }
+        /* សម្រាប់អេក្រង់ទូរសព្ទបញ្ឈរ (Portrait) */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100%; /* ប្រើពេញអេក្រង់ទូរសព្ទ */
+                padding: 5px;
+            }
+            
+            .project-card {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
 
         /* ការកំណត់ទូទៅសម្រាប់តារាង */
 
@@ -18,8 +42,48 @@
 
 
         /* ការកំណត់សម្រាប់ Project List Cards */
-        #project-list { display: grid; gap: 10px; margin-top: 20px; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; }       
+        #project-list {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+            width: 100%; /* ធានាថាវាស្មើនឹង Container */
+        }
+        /* សម្រាប់កាតគម្រោង */
+        .project-card {
+            background-color: #f0f0f0; /* ពណ៌ប្រផេះដិតបន្តិចតាមចិត្តចង់ */
+            border: 1px solid #dcdcdc;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%; /* កំណត់ឱ្យវាស្មើនឹង Container */
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            transition: box-shadow 0.3s ease; /* បន្ថែម Effect ពេលយក Mouse ដាក់ពីលើ */
+            cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
+        }   
+        .project-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* បង្ហាញស្រមោលតិចៗពេល Hover */
+        }
+
+        #project-view button {
+            width: auto; 
+            padding: 8px 16px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }       
+
+        .project-card button {
+            width: auto;             /* ដក 100% ចេញ ហើយដាក់ auto ឬគ្រាន់តែលុបចោល */
+            padding: 5px 15px;      /* បន្ថយ padding ឱ្យសមល្មម */
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;    /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
+        }
 
         /* ជួរឈរ Desc ក្នុង Project Card: ឱ្យវាធំតាមកន្លែងដែលសល់ */
         .project-card table th:nth-child(2), .project-card table td:nth-child(2) { width: auto; word-break: break-word; }
@@ -32,7 +96,7 @@
         #task-view table th:nth-child(3), #task-view table th:nth-child(4), #task-view table th:nth-child(5) { width: 80px; }
         #task-view table th:nth-child(6),
         #task-view table td:nth-child(6) {
-            width: 140px;
+            width: 125px;
             white-space: nowrap;
         }
         #task-view table th:nth-child(2) { width: auto; }
@@ -47,25 +111,41 @@
             padding:6px 10px;
             margin-right:5px;
         }
-        /* សម្រាប់កាតគម្រោង */
-        .project-card {
-            background-color: #f0f0f0; /* ពណ៌ប្រផេះដិតបន្តិចតាមចិត្តចង់ */
-            border: 1px solid #dcdcdc;
-            padding: 15px;
-            border-radius: 10px;
-            width: 100%; /* កំណត់ឱ្យវាស្មើនឹង Container */
-            box-sizing: border-box;
-            margin-bottom: 15px;
+        /* កំណត់ទំហំអក្សរ h2 ធម្មតាសម្រាប់កុំព្យូទ័រ */
+        h2 {
+            font-size: 24px; 
         }
 
-
+        /* ដាក់នៅទីនេះ៖ ផ្លាស់ប្តូរទំហំអក្សរសម្រាប់ទូរសព្ទ */
+        @media screen and (max-width: 600px) {
+            h2 {
+                font-size: 18px;
+                word-wrap: break-word;
+            }
+        }
+        /* ដោះស្រាយបញ្ហាតារាងដែលវែងពេកក្នុងកាត */
+        .project-table {
+            width: 100%;
+            table-layout: fixed; /* ជួយឱ្យតារាងមិនរុញដាច់កាត */
+        }
+        /* កំណត់ឱ្យតារាងអាច Scroll បានតែនៅក្នុងកាតបាន */
+        .project-card table {
+            display: block;
+            overflow-x: auto; /* អនុញ្ញាតឱ្យ Scroll តារាងតែក្នុងកាត */
+            white-space: nowrap;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <div id="project-view">
-        <h2>បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 style="margin: 0;">បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
+            <button onclick="toggleProjectForm()" style="width: auto; padding: 8px 16px; white-space: nowrap;">
+                New_Project
+            </button>
+        </div>
+        
         <div id="project-form-container" style="display: none; margin-top: 10px;">
             <input type="text" id="new_project_id" placeholder="Project ID">
             <input type="date" id="new_project_date">
@@ -168,10 +248,17 @@
 
             const card = document.createElement('div');
             card.className = 'project-card';
-            card.onclick = () => openProject(p.id);
+            // card.onclick = () => openProject(p.id);
             card.innerHTML = `
-                <h3>Sub: ${p.id}</h3>
-                <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <h3 style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        Sub: ${p.id}
+                    </h3>
+                    <button onclick="openProject('${p.id}')" style="padding: 5px 15px; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
+                        Task Table
+                    </button>
+                </div>
+                <p style="margin-top: 10px;">កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
                 <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
                         ${tasks.map(t => `
@@ -182,7 +269,7 @@
                             </tr>
                         `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
                     </tbody>
-                </table>
+                </table>            
             `;
             list.appendChild(card);
         }
