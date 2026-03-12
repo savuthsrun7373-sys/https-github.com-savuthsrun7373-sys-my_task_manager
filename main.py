@@ -74,19 +74,21 @@ def update_task(task: dict = Body(...)):
 
 @app.post("/tasks")
 def save_task(task: dict = Body(...)):
-
     project_id = task.get("project_id")
     no = task.get("no")
-
+    
+    # Check if a specific ID was passed (meaning it's an update)
+    # If not, try to find the document by project_id and no
+    task_id = task.get("id") 
+    
     tasks_ref = db.collection("tasks")
-
-    # check existing task
-    existing = tasks_ref.where("project_id", "==", project_id).where("no", "==", no).stream()
-
-    doc = None
-    for d in existing:
-        doc = d
-        break
+    
+    if not task_id:
+        # Find existing if no ID provided
+        existing = tasks_ref.where("project_id", "==", project_id).where("no", "==", no).stream()
+        for doc in existing:
+            task_id = doc.id
+            break
 
     data = {
         "project_id": project_id,
@@ -97,12 +99,11 @@ def save_task(task: dict = Body(...)):
         "note": task.get("note")
     }
 
-    if doc:
-        # UPDATE
-        tasks_ref.document(doc.id).set(data, merge=True)
+    if task_id:
+        # UPDATE existing document
+        tasks_ref.document(task_id).set(data, merge=True)
         return {"message": "Task updated"}
-
     else:
-        # CREATE
+        # CREATE new document
         tasks_ref.add(data)
         return {"message": "Task created"}
