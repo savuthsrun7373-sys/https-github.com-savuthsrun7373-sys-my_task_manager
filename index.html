@@ -21,7 +21,18 @@
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; 
         cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
+        }   
+
+        #project-view button {
+            width: auto; 
+            padding: 8px 16px;
+            background-color: #2980b9;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
         }       
+
         .project-card button {
             width: auto;             /* ដក 100% ចេញ ហើយដាក់ auto ឬគ្រាន់តែលុបចោល */
             padding: 5px 15px;      /* បន្ថយ padding ឱ្យសមល្មម */
@@ -64,8 +75,13 @@
 <body>
 <div class="container">
     <div id="project-view">
-        <h2>បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h2 style="margin: 0;">បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
+            <button onclick="toggleProjectForm()" style="width: auto; padding: 8px 16px; white-space: nowrap;">
+                New_Project
+            </button>
+        </div>
+        
         <div id="project-form-container" style="display: none; margin-top: 10px;">
             <input type="text" id="new_project_id" placeholder="Project ID">
             <input type="date" id="new_project_date">
