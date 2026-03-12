@@ -5,189 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ប្រព័ន្ធតាមដានការងារ</title>
     <style>
-        /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
         .container { width: 95%; max-width: 1200px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        
-        /* ការកំណត់ទូទៅសម្រាប់តារាង */
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; table-layout: auto; }
         th, td { padding: 8px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #2980b9; color: white; }
-
-        /* ការកំណត់សម្រាប់ Project List Cards */
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
         .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; }
-        
-        /* ជួរឈរ Desc ក្នុង Project Card: ឱ្យវាធំតាមកន្លែងដែលសល់ */
-        .project-card table th:nth-child(2), .project-card table td:nth-child(2) { width: auto; word-break: break-word; }
-        .project-card table th:nth-child(1), .project-card table td:nth-child(1) { width: 30px; text-align: center; }
-        .project-card table th:nth-child(3), .project-card table td:nth-child(3) { width: 60px; }
-
-        /* ការកំណត់សម្រាប់ Task View */
-        #task-view table th:nth-child(1) { width: 40px; }
-        #task-view table th:nth-child(3), #task-view table th:nth-child(4), #task-view table th:nth-child(5) { width: 80px; }
-        #task-view table th:nth-child(6) { width: 60px; }
-        #task-view table th:nth-child(2) { width: auto; }
-
-        /* ធាតុ Form និងប៊ូតុង */
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
+        .action-btns { display: flex; gap: 5px; margin-top: 10px; }
     </style>
 </head>
 <body>
 <div class="container">
     <div id="project-view">
         <h2>បញ្ជី Project</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
+        <button onclick="toggleProjectForm()">+ New Project</button>
         <div id="project-form-container" style="display: none; margin-top: 10px;">
-
-
-
             <input type="text" id="new_project_id" placeholder="Project ID">
-
-
-
             <input type="date" id="new_project_date">
-
-
-
-            <button onclick="createProject()">រក្សាទុក</button>
-
-
-
+            <button onclick="createProject()" style="background-color: #27ae60;">រក្សាទុក Project</button>
         </div>
-
-
-
         <div id="project-list"></div>
-
-
-
     </div>
-
-
-
-
-
-
 
     <div id="task-view" style="display:none;">
-
-
-
         <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
-
-
-
         <h2 id="current-project-title"></h2>
-
-
-
         <table>
-
-
-
             <thead>
-
-
-
                 <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
-
-
-
             </thead>
-
-
-
             <tbody id="task-table-body"></tbody>
-
-
-
-            <tr id="new-task-row" style="display:none; background-color: #f9f9f9;">
-
-
-
-                <td><input type="text" id="new-no"></td>
-
-
-
-                <td><input type="text" id="new-description"></td>
-
-
-
+            <tr id="input-row" style="display:none; background-color: #e8f4fd;">
+                <td><input type="text" id="task-no" placeholder="No"></td>
+                <td><input type="text" id="task-desc" placeholder="Description"></td>
                 <td>
-
-
-
-                    <select id="new-status">
-
-
-
-                        <option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Done">Done</option>
-
-
-
+                    <select id="task-status">
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Done">Done</option>
                     </select>
-
-
-
                 </td>
-
-
-
-                <td><input type="date" id="new-date"></td>
-
-
-
-                <td><input type="text" id="new-note"></td>
-
-
-
+                <td><input type="date" id="task-date"></td>
+                <td><input type="text" id="task-note" placeholder="Note"></td>
+                <td><button onclick="saveTask()" style="background-color: #27ae60;">Save</button></td>
             </tr>
-
-
-
         </table>
-
-
-
-        <button onclick="toggleNewRow()" id="plus-btn">+</button>
-
-
-
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save/Update</button>
-
-
-
+        
+        <div class="action-btns">
+            <button onclick="prepareNewTask()" id="plus-btn">+ បន្ថែមការងារ</button>
+            <button onclick="cancelInput()" id="cancel-btn" style="display:none; background-color: #e74c3c;">បោះបង់</button>
+        </div>
     </div>
-
-
-
 </div>
 
-
-
-
-
-
-
 <script>
-
-
-
     let activeProjectId = '';
-
-
-
     let currentTasks = [];
 
-
-
-
-
-
-
-   async function loadProjects() {
+    async function loadProjects() {
         const res = await fetch('/get_projects');
         const data = await res.json();
         const list = document.getElementById('project-list');
@@ -195,96 +73,127 @@
         for (const p of data.projects) {
             const taskRes = await fetch(`/tasks?project_id=${p.id}`);
             const taskData = await taskRes.json();
-            // ធ្វើការ Sort នៅទីនេះមុនពេលបង្ហាញ
             let tasks = taskData.tasks || [];
-            tasks.sort((a, b) => {
-                // ១. យក "Done" ទៅលើគេ
-                if (a.status === 'Done' && b.status !== 'Done') return -1;
-                if (a.status !== 'Done' && b.status === 'Done') return 1;
-                // ២. បន្ទាប់មកតម្រៀបតាមលេខរៀង (No) ពីតូចទៅធំ
-                return parseInt(a.no) - parseInt(b.no);
-            });
+            tasks.sort((a, b) => (a.status === 'Done' ? -1 : 1) || parseInt(a.no) - parseInt(b.no));
+            
             const card = document.createElement('div');
             card.className = 'project-card';
             card.onclick = () => openProject(p.id);
             card.innerHTML = `
                 <h3>Sub: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
-                <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+                <table>
+                    <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
-                        ${tasks.map(t => `
-                            <tr>
-                                <td>${t.no}</td>
-                                <td>${t.description}</td> 
-                                <td>${t.status}</td>
-                            </tr>
-                        `).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
+                        ${tasks.map(t => `<tr><td>${t.no}</td><td>${t.description}</td><td>${t.status}</td></tr>`).join('') || '<tr><td colspan="3">No tasks</td></tr>'}
                     </tbody>
-                </table>
-            `;
+                </table>`;
             list.appendChild(card);
         }
     }
+
     async function openProject(id) {
         activeProjectId = id;
         document.getElementById('project-view').style.display = 'none';
         document.getElementById('task-view').style.display = 'block';
-        document.getElementById('current-project-title').innerText = "Sub: " + id;
+        document.getElementById('current-project-title').innerText = "Project: " + id;
+        cancelInput(); 
         const res = await fetch(`/tasks?project_id=${id}`);
         const data = await res.json();
         currentTasks = data.tasks || [];
-        sortAndRender();
+        renderTasks();
     }
 
-    function sortAndRender() {
-        currentTasks.sort((a, b) => {
-            if (a.status === 'Done' && b.status !== 'Done') return -1;
-            if (a.status !== 'Done' && b.status === 'Done') return 1;
-            return parseInt(a.no) - parseInt(b.no);
-        });
+    function renderTasks() {
+        currentTasks.sort((a, b) => (a.status === 'Done' ? -1 : 1) || parseInt(a.no) - parseInt(b.no));
         const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = currentTasks.map(t => `
             <tr>
                 <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td><td>${t.date}</td><td>${t.note}</td>
-                <td><button onclick="editTask('${t.no}')">Edit</button></td>
+                <td><button onclick="editTask('${t.no}')" style="background-color: #f39c12; padding: 5px; width: auto;">Edit</button></td>
             </tr>
         `).join('');
     }
-    function toggleNewRow() {
-        document.getElementById('new-task-row').style.display = 'table-row';
-        document.getElementById('plus-btn').style.display = 'none';
-        document.getElementById('save-btn').style.display = 'inline';
+
+    // --- LOGIC FOR AUTO-SEQUENCE & INPUT ---
+
+    function getNextSequenceNo() {
+        if (currentTasks.length === 0) return 1;
+        const nos = currentTasks.map(t => parseInt(t.no)).filter(n => !isNaN(n));
+        return nos.length > 0 ? Math.max(...nos) + 1 : 1;
+    }
+
+    function clearInputs() {
+        ['task-no', 'task-desc', 'task-date', 'task-note'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('task-status').value = 'Pending';
+        // Auto-set today's date
+        document.getElementById('task-date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function prepareNewTask() {
+        clearInputs();
+        document.getElementById('task-no').value = getNextSequenceNo();
+        showInputRow();
     }
 
     function editTask(no) {
-        const task = currentTasks.find(t => t.no === no);
+        const task = currentTasks.find(t => t.no == no);
         if (!task) return;
-        toggleNewRow();
-        document.getElementById('new-no').value = task.no;
-        document.getElementById('new-description').value = task.description;
-        document.getElementById('new-status').value = task.status;
-        document.getElementById('new-date').value = task.date;
-        document.getElementById('new-note').value = task.note;
+        document.getElementById('task-no').value = task.no;
+        document.getElementById('task-desc').value = task.description;
+        document.getElementById('task-status').value = task.status;
+        document.getElementById('task-date').value = task.date;
+        document.getElementById('task-note').value = task.note;
+        showInputRow();
     }
 
-    async function saveNewTask() {
+    async function saveTask() {
         const payload = {
             project_id: activeProjectId,
-            no: document.getElementById('new-no').value,
-            description: document.getElementById('new-description').value,
-            status: document.getElementById('new-status').value,
-            date: document.getElementById('new-date').value,
-            note: document.getElementById('new-note').value
+            no: document.getElementById('task-no').value,
+            description: document.getElementById('task-desc').value,
+            status: document.getElementById('task-status').value,
+            date: document.getElementById('task-date').value,
+            note: document.getElementById('task-note').value
         };
         await fetch('/tasks', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
-        document.getElementById('new-task-row').style.display = 'none';
-        document.getElementById('save-btn').style.display = 'none';
-        document.getElementById('plus-btn').style.display = 'inline';
+        cancelInput();
         openProject(activeProjectId);
     }
-    function showProjects() { document.getElementById('project-view').style.display = 'block'; document.getElementById('task-view').style.display = 'none'; }
-    function toggleProjectForm() { const f = document.getElementById('project-form-container'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
-    async function createProject() { await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: document.getElementById('new_project_id').value, date: document.getElementById('new_project_date').value}) }); loadProjects(); toggleProjectForm(); }
+
+    function showInputRow() {
+        document.getElementById('input-row').style.display = 'table-row';
+        document.getElementById('plus-btn').style.display = 'none';
+        document.getElementById('cancel-btn').style.display = 'inline';
+    }
+
+    function cancelInput() {
+        document.getElementById('input-row').style.display = 'none';
+        document.getElementById('plus-btn').style.display = 'inline';
+        document.getElementById('cancel-btn').style.display = 'none';
+        clearInputs();
+    }
+
+    function showProjects() { 
+        document.getElementById('project-view').style.display = 'block'; 
+        document.getElementById('task-view').style.display = 'none'; 
+        loadProjects();
+    }
+
+    function toggleProjectForm() { 
+        const f = document.getElementById('project-form-container'); 
+        f.style.display = (f.style.display === 'none') ? 'block' : 'none'; 
+    }
+
+    async function createProject() { 
+        const id = document.getElementById('new_project_id').value;
+        const date = document.getElementById('new_project_date').value;
+        if(!id) return alert("Please enter Project ID");
+        await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id, date}) }); 
+        loadProjects(); 
+        toggleProjectForm(); 
+    }
+
     window.onload = loadProjects;
 </script>
 </body>
