@@ -7,15 +7,14 @@
     <style>
         /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
+        /* ធានាថា container មិនរុញលើសអេក្រង់ */
         .container {
-            width: 95%;
+            width: 100%;
             max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            padding: 10px; /* កាត់បន្ថយ Padding ពេលទូរសព្ទបញ្ឈរ */
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            box-sizing: border-box; /* សំខាន់៖ ធានាថា padding មិនបូកបន្ថែមលើ width */
+            margin: auto;
+            padding: 10px;
+            box-sizing: border-box;
+            overflow-x: hidden; /* បិទការរុញផ្ដេករបស់ Container */
         }
         /* ធានាថាគ្រប់ Child element មិនហួសទំហំ Container */
         * {
@@ -49,15 +48,17 @@
             margin-top: 20px;
             width: 100%; /* ធានាថាវាស្មើនឹង Container */
         }
+        /* សម្រាប់កាតគម្រោង */
         .project-card {
-            background-color: #e9ecef; /* ពណ៌ប្រផេះស្រាលណាស់ */
-            border: 1px solid #e0e0e0; /* បន្ថែមបន្ទាត់ព្រំដែនស្តើង */
-            padding: 20px;
+            background-color: #f0f0f0; /* ពណ៌ប្រផេះដិតបន្តិចតាមចិត្តចង់ */
+            border: 1px solid #dcdcdc;
+            padding: 15px;
             border-radius: 10px;
-            width: 100%;
+            width: 100%; /* កំណត់ឱ្យវាស្មើនឹង Container */
             box-sizing: border-box;
+            margin-bottom: 15px;
             transition: box-shadow 0.3s ease; /* បន្ថែម Effect ពេលយក Mouse ដាក់ពីលើ */
-        cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
+            cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
         }   
         .project-card:hover {
             box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* បង្ហាញស្រមោលតិចៗពេល Hover */
@@ -121,6 +122,17 @@
                 font-size: 18px;
                 word-wrap: break-word;
             }
+        }
+        /* ដោះស្រាយបញ្ហាតារាងដែលវែងពេកក្នុងកាត */
+        .project-table {
+            width: 100%;
+            table-layout: fixed; /* ជួយឱ្យតារាងមិនរុញដាច់កាត */
+        }
+        /* កំណត់ឱ្យតារាងអាច Scroll បានតែនៅក្នុងកាតបាន */
+        .project-card table {
+            display: block;
+            overflow-x: auto; /* អនុញ្ញាតឱ្យ Scroll តារាងតែក្នុងកាត */
+            white-space: nowrap;
         }
     </style>
 </head>
