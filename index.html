@@ -188,12 +188,21 @@
     }
 
     function sortAndRender() {
-        // ... sorting logic ...
+        // ១. តម្រៀបទិន្នន័យក្នុង currentTasks មុនពេលបង្ហាញ
+        currentTasks.sort((a, b) => {
+            // តម្រៀបតាមលេខរៀង (No) ពីតូចទៅធំ
+            return parseInt(a.no) - parseInt(b.no);
+        });
+
+        // ២. បង្ហាញទិន្នន័យដែលបានតម្រៀបរួច
         const tbody = document.getElementById('task-table-body');
         tbody.innerHTML = currentTasks.map(t => `
             <tr>
-                <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td>
-                <td>${t.date}</td><td>${t.note}</td>
+                <td>${t.no}</td>
+                <td>${t.description}</td>
+                <td>${t.status}</td>
+                <td>${t.date}</td>
+                <td>${t.note}</td>
                 <td class="action-buttons">
                     <button onclick="editTask('${t.id}')">Edit</button>
                     <button onclick="deleteTask('${t.id}')" style="background:#e74c3c;">Delete</button>
