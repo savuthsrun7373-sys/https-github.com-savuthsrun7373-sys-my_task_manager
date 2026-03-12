@@ -30,23 +30,13 @@
         /* ការកំណត់សម្រាប់ Task View */
         #task-view table th:nth-child(1) { width: 40px; }
         #task-view table th:nth-child(3), #task-view table th:nth-child(4), #task-view table th:nth-child(5) { width: 80px; }
-        #task-view table th:nth-child(6),
-        #task-view table td:nth-child(6) {
-            width: 140px;
-            white-space: nowrap;
-        }
+        #task-view table th:nth-child(6) { width: 60px; }
         #task-view table th:nth-child(2) { width: auto; }
 
 
         /* ធាតុ Form និងប៊ូតុង */
         input, select, button { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ddd; border-radius: 4px; }
         button { background-color: #2980b9; color: white; border: none; cursor: pointer; }
-        
-        .action-buttons button{
-            width:auto;
-            padding:6px 10px;
-            margin-right:5px;
-        }
     </style>
 </head>
 <body>
@@ -194,7 +184,7 @@
             <tr>
                 <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td>
                 <td>${t.date}</td><td>${t.note}</td>
-                <td class="action-buttons">
+                <td>
                     <button onclick="editTask('${t.id}')">Edit</button>
                     <button onclick="deleteTask('${t.id}')" style="background:#e74c3c;">Delete</button>
                 </td>
