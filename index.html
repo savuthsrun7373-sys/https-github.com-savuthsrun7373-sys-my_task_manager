@@ -10,12 +10,28 @@
         .container {
             width: 95%;
             max-width: 1200px;
-            margin: auto;
+            margin: 0 auto;
             background: white;
-            padding: 20px; /* បង្កើន padding ឱ្យមើលទៅធំទូលាយ */
+            padding: 10px; /* កាត់បន្ថយ Padding ពេលទូរសព្ទបញ្ឈរ */
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            box-sizing: border-box; /* សំខាន់ណាស់៖ ជួយឱ្យ Padding មិនធ្វើឱ្យ Container ហួសទំហំ */
+            box-sizing: border-box; /* សំខាន់៖ ធានាថា padding មិនបូកបន្ថែមលើ width */
+        }
+        /* ធានាថាគ្រប់ Child element មិនហួសទំហំ Container */
+        * {
+            box-sizing: border-box;
+        }
+        /* សម្រាប់អេក្រង់ទូរសព្ទបញ្ឈរ (Portrait) */
+        @media screen and (max-width: 600px) {
+            .container {
+                width: 100%; /* ប្រើពេញអេក្រង់ទូរសព្ទ */
+                padding: 5px;
+            }
+            
+            .project-card {
+                width: 100%;
+                margin-bottom: 10px;
+            }
         }
 
         /* ការកំណត់ទូទៅសម្រាប់តារាង */
@@ -34,7 +50,7 @@
             width: 100%; /* ធានាថាវាស្មើនឹង Container */
         }
         .project-card {
-            background-color: #fcfcfc; /* ពណ៌ប្រផេះស្រាលណាស់ */
+            background-color: #e9ecef; /* ពណ៌ប្រផេះស្រាលណាស់ */
             border: 1px solid #e0e0e0; /* បន្ថែមបន្ទាត់ព្រំដែនស្តើង */
             padding: 20px;
             border-radius: 10px;
@@ -93,6 +109,18 @@
             width:auto;
             padding:6px 10px;
             margin-right:5px;
+        }
+        /* កំណត់ទំហំអក្សរ h2 ធម្មតាសម្រាប់កុំព្យូទ័រ */
+        h2 {
+            font-size: 24px; 
+        }
+
+        /* ដាក់នៅទីនេះ៖ ផ្លាស់ប្តូរទំហំអក្សរសម្រាប់ទូរសព្ទ */
+        @media screen and (max-width: 600px) {
+            h2 {
+                font-size: 18px;
+                word-wrap: break-word;
+            }
         }
     </style>
 </head>
