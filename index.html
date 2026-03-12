@@ -68,20 +68,51 @@
             cursor: pointer;
             white-space: nowrap;   /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
         }
+        /* Container for alignment */
+        .header-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
 
+        /* Style for the + button */
+        .add-btn { 
+            width: 40px; 
+            height: 40px; 
+            font-size: 24px; 
+            padding: 0; 
+            border-radius: 5px; 
+            border: none; 
+            background-color: #2980b9; 
+            color: white; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        /* Optional: hover effect */
+        .add-btn:hover {
+            background-color: #1a5276;
+        }
 
     </style>
 </head>
 <body>
 <div class="container">
     <div id="project-view">
-        <h2>បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
+        <div class="header-container">
+            <button class="add-btn" onclick="toggleProjectForm()">+</button>
+            <h2 style="margin: 0;">បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
+        </div>
+
         <div id="project-form-container" style="display: none; margin-top: 10px;">
             <input type="text" id="new_project_id" placeholder="Project ID">
             <input type="date" id="new_project_date">
             <button onclick="createProject()">រក្សាទុក</button>
         </div>
+        
         <div id="project-list"></div>
     </div>
     <div id="task-view" style="display:none;">
