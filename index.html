@@ -168,8 +168,13 @@
             const card = document.createElement('div');
             card.className = 'project-card';
             // card.onclick = () => openProject(p.id);
-            card.innerHTML = `
-                <h3>Sub: ${p.id}</h3>
+            card.innerHTML = `                
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>Sub: ${p.id}</h3>
+                    <button onclick="openProject('${p.id}')" style="padding: 5px 10px; cursor: pointer;">
+                        Task Table
+                    </button>
+                </div>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
                 <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
