@@ -71,4 +71,20 @@ def update_task(task: dict = Body(...)):
         "note": task.get('note')
     }, merge=True)
     return {"message": "Task updated"}
+@app.route('/tasks', methods=['PUT'])
+def update_task():
+    data = request.json
 
+    project_id = data['project_id']
+    no = data['no']
+
+    # update database
+    cursor.execute("""
+        UPDATE tasks
+        SET description=%s, status=%s, date=%s, note=%s
+        WHERE project_id=%s AND no=%s
+    """, (data['description'], data['status'], data['date'], data['note'], project_id, no))
+
+    conn.commit()
+
+    return jsonify({"status":"updated"})
