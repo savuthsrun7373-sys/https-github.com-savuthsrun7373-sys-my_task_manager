@@ -184,7 +184,10 @@
             <tr>
                 <td>${t.no}</td><td>${t.description}</td><td>${t.status}</td>
                 <td>${t.date}</td><td>${t.note}</td>
-                <td><button onclick="editTask('${t.id}')">Edit</button></td>
+                <td>
+                    <button onclick="editTask('${t.id}')">Edit</button>
+                    <button onclick="deleteTask('${t.id}')" style="background:#e74c3c;">Delete</button>
+                </td>
             </tr>
         `).join('');
     }
@@ -200,6 +203,14 @@
     function toggleProjectForm() { const f = document.getElementById('project-form-container'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
     async function createProject() { await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: document.getElementById('new_project_id').value, date: document.getElementById('new_project_date').value}) }); loadProjects(); toggleProjectForm(); }
     window.onload = loadProjects;
+
+    async function deleteTask(id) {
+        if (!confirm("Delete this task?")) return;
+        await fetch(`/tasks/${id}`, {
+            method: "DELETE"
+        });
+        openProject(activeProjectId); // refresh list
+    }
 
 </script>
 </body>

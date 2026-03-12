@@ -73,3 +73,7 @@ def update_task(task: dict = Body(...)):
     return {"message": "Task updated"}
 
 # --- Tasks ---
+@app.delete("/tasks/{task_id}")
+def delete_task(task_id: str):
+    db.collection("tasks").document(task_id).delete()
+    return {"message": "Task deleted"}
