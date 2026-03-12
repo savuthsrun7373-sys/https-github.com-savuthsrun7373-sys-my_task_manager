@@ -19,7 +19,18 @@
 
         /* ការកំណត់សម្រាប់ Project List Cards */
         #project-list { display: grid; gap: 10px; margin-top: 20px; }
-        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; }       
+        .project-card { background: #fff; padding: 15px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; width: 100%; box-sizing: border-box; 
+        cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
+        }       
+        .project-card button {
+            width: 100%; /* ឱ្យប៊ូតុងពេញទទឹងកាត */
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
 
         /* ជួរឈរ Desc ក្នុង Project Card: ឱ្យវាធំតាមកន្លែងដែលសល់ */
         .project-card table th:nth-child(2), .project-card table td:nth-child(2) { width: auto; word-break: break-word; }
@@ -156,7 +167,7 @@
 
             const card = document.createElement('div');
             card.className = 'project-card';
-            card.onclick = () => openProject(p.id);
+            // card.onclick = () => openProject(p.id);
             card.innerHTML = `
                 <h3>Sub: ${p.id}</h3>
                 <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
