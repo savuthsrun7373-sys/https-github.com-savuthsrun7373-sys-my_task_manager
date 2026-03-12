@@ -97,7 +97,7 @@
 
     async function saveNewTask() {
         const payload = {
-            id: editingDocId, // Pass the ID. If null, server creates new.
+            id: editingDocId,
             project_id: activeProjectId,
             no: document.getElementById('new-no').value,
             description: document.getElementById('new-description').value,
@@ -106,41 +106,22 @@
             note: document.getElementById('new-note').value
         };
 
-        await fetch('/tasks', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+        const url = editingDocId ? "/update_task" : "/tasks";
+
+        await fetch(url, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
             body: JSON.stringify(payload)
         });
 
-        // Reset UI
         editingDocId = null;
+
         document.getElementById('new-task-row').style.display = 'none';
         document.getElementById('save-btn').style.display = 'none';
         document.getElementById('plus-btn').style.display = 'inline';
-        
-        openProject(activeProjectId); // Refresh the list
-    }
 
-    async function saveNewTask() {
-        const payload = {
-            id: editingDocId, // Send the ID back to the server
-            project_id: activeProjectId,
-            no: document.getElementById('new-no').value,
-            description: document.getElementById('new-description').value,
-            status: document.getElementById('new-status').value,
-            date: document.getElementById('new-date').value,
-            note: document.getElementById('new-note').value
-        };
-
-        await fetch('/tasks', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
-
-        editingDocId = null; // Clear the ID after saving
-        // ... reset UI and call openProject() ...
-    }
+        openProject(activeProjectId);
+    }  
 
    async function loadProjects() {
         const res = await fetch('/get_projects');
@@ -214,37 +195,7 @@
         document.getElementById('save-btn').style.display = 'inline';
     }
 
-    function editTask(no) {
-        const task = currentTasks.find(t => t.no === no);
-        if (!task) return;
-
-        editingTaskNo = no;   // បញ្ជាក់ថាកំពុង Edit
-        toggleNewRow();
-        document.getElementById('new-no').value = task.no;
-        document.getElementById('new-description').value = task.description;
-        document.getElementById('new-status').value = task.status;
-        document.getElementById('new-date').value = task.date;
-        document.getElementById('new-note').value = task.note;
-    }
-
-    async function saveNewTask() {
-        const payload = {
-            id: editingDocId, // Include the ID
-            project_id: activeProjectId,
-            no: document.getElementById('new-no').value,
-            // ... rest of fields ...
-        };
-
-        await fetch('/tasks', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(payload)
-        });
-
-        editingDocId = null; // Reset
-        // ... rest of logic ...
-    }
-
+ 
     function showProjects() { document.getElementById('project-view').style.display = 'block'; document.getElementById('task-view').style.display = 'none'; }
     function toggleProjectForm() { const f = document.getElementById('project-form-container'); f.style.display = (f.style.display === 'none') ? 'block' : 'none'; }
     async function createProject() { await fetch('/projects', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({id: document.getElementById('new_project_id').value, date: document.getElementById('new_project_date').value}) }); loadProjects(); toggleProjectForm(); }
