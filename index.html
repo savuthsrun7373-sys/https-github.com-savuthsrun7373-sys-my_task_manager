@@ -212,18 +212,19 @@
             card.className = 'project-card';            
             card.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                    <h3 style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <h3 style="margin: 0; white-space: normal; word-wrap: break-word;">
                         Sub: ${p.id}
                     </h3>
-                    <button onclick="openProject('${p.id}')" style="padding: 5px 15px; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
-                        Task Table
-                    </button>
+                    <button onclick="openProject('${p.id}')" style="padding: 5px 15px; cursor: pointer; white-space: nowrap; flex-shrink: 0;"> 
+                    Task Table
+                     </button>
                 </div>
                 <p style="margin-top: 10px;">កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
                 <table class="project-table">
                     </table>
-  
-                <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
+
+
+                    <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
                         ${tasks.map(t => `
                             <tr>
