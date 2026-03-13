@@ -320,6 +320,11 @@
     
     // នៅពេលអ្នកបើក Project detail
     function openProject(projectId) {
+        const projectView = document.getElementById('project-view'); // បន្ថែមបន្ទាត់នេះ
+        const projectList = document.getElementById('project-list'); // បន្ថែមបន្ទាត់នេះ
+        
+        projectList.style.display = 'none';    // លាក់បញ្ជី
+        projectView.style.display = 'block';   // បង្ហាញព័ត៌មានលម្អិត
         // បង្ហាញ UI សម្រាប់មើលលម្អិត
         projectView.innerHTML = `
             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
@@ -332,6 +337,13 @@
                 ...
             </table>
         `;
+    }
+    function goBack() {
+        // មុខងារនេះត្រូវបង្ហាញ Project-list វិញ និងលាក់ Project-view
+        document.getElementById('project-view').style.display = 'none';
+        document.getElementById('project-list').style.display = 'block';
+        // ឬប្រសិនបើអ្នកប្រើវិធីប្តូរ innerHTML សូមហៅ function ដែលបង្ហាញបញ្ជីគម្រោងឡើងវិញ
+        loadProjects(); 
     }
 
 </script>
