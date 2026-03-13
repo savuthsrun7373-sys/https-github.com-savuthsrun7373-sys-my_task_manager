@@ -317,6 +317,22 @@
         });
         openProject(activeProjectId); // refresh list
     }
+    
+    // នៅពេលអ្នកបើក Project detail
+    function openProject(projectId) {
+        // បង្ហាញ UI សម្រាប់មើលលម្អិត
+        projectView.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                <button onclick="goBack()" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0;">
+                    ←
+                </button>
+                <h2 style="margin: 0;">Sub: ${projectId}</h2>
+            </div>
+            <table class="project-table">
+                ...
+            </table>
+        `;
+    }
 
 </script>
 </body>
