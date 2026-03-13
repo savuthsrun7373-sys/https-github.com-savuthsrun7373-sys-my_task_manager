@@ -122,8 +122,13 @@
         <div id="project-list"></div>
     </div>
     <div id="task-view" style="display:none;">
-        <button onclick="showProjects()">⬅️ ត្រឡប់ក្រោយ</button>
-        <h2 id="current-project-title"></h2>
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <button onclick="showProjects()" style="background: none; border: none; font-size: 24px; cursor: pointer; padding: 0; color: #2980b9;">
+                ⬅️
+            </button>
+            <h2 id="current-project-title" style="margin: 0;"></h2>
+        </div>
+
         <table>
             <thead>
                 <tr><th>No</th><th>Desc</th><th>Status</th><th>Date</th><th>Note</th><th>Action</th></tr>
@@ -134,15 +139,20 @@
                 <td><input type="text" id="new-description"></td>
                 <td>
                     <select id="new-status">
-                        <option value="Pending">Pending</option><option value="Processing">Processing</option><option value="Done">Done</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Processing">Processing</option>
+                        <option value="Done">Done</option>
                     </select>
                 </td>
                 <td><input type="date" id="new-date"></td>
                 <td><input type="text" id="new-note"></td>
             </tr>
         </table>
-        <button onclick="toggleNewRow()" id="plus-btn">+</button>
-        <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60;">Save</button>
+        
+        <div style="margin-top: 15px;">
+            <button onclick="toggleNewRow()" id="plus-btn">+</button>
+            <button onclick="saveNewTask()" id="save-btn" style="display:none; background-color: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">Save</button>
+        </div>
     </div>
 </div>
 <script>
