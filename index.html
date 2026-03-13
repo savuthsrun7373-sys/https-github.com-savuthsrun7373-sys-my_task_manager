@@ -220,7 +220,7 @@
         let projects = data.projects || []; 
 
         // តម្រៀបគម្រោងតាមកាលបរិច្ឆេទ (ចាស់ទៅថ្មី)
-        projects.sort((a, b) => new Date(a.date) - new Date(b.date));
+        projects.sort((a, b) => new Date(b.date) - new Date(a.date));
 
         const list = document.getElementById('project-list');
         list.innerHTML = '';
