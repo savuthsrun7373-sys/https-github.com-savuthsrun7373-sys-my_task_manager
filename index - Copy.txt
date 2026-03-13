@@ -47,18 +47,72 @@
             padding:6px 10px;
             margin-right:5px;
         }
+        /* សម្រាប់កាតគម្រោង */
+        .project-card {
+            background-color: #f0f0f0; /* ពណ៌ប្រផេះដិតបន្តិចតាមចិត្តចង់ */
+            border: 1px solid #dcdcdc;
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%; /* កំណត់ឱ្យវាស្មើនឹង Container */
+            box-sizing: border-box;
+            margin-bottom: 15px;
+            cursor: default; /* ផ្លាស់ប្តូរ cursor មិនឱ្យបង្ហាញថាអាចចុចបាន */
+        }
+        .project-card button {
+            width: auto;             /* ដក 100% ចេញ ហើយដាក់ auto ឬគ្រាន់តែលុបចោល */
+            padding: 5px 15px;      /* បន្ថយ padding ឱ្យសមល្មម */
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            white-space: nowrap;   /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
+        }
+        /* Container for alignment */
+        .header-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 15px; 
+            margin-bottom: 20px; 
+        }
+
+        /* Style for the + button */
+        .add-btn { 
+            width: 40px; 
+            height: 40px; 
+            font-size: 24px; 
+            padding: 0; 
+            border-radius: 5px; 
+            border: none; 
+            background-color: #2980b9; 
+            color: white; 
+            cursor: pointer; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+
+        /* Optional: hover effect */
+        .add-btn:hover {
+            background-color: #1a5276;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <div id="project-view">
-        <h2>បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
-        <button onclick="toggleProjectForm()">New_Project</button>
+        <div class="header-container">
+            <button class="add-btn" onclick="toggleProjectForm()">+</button>
+            <h2 style="margin: 0;">បញ្ជីគម្រោង-ការងារប្រតិបត្តិការ</h2>
+        </div>
+
         <div id="project-form-container" style="display: none; margin-top: 10px;">
             <input type="text" id="new_project_id" placeholder="Project ID">
             <input type="date" id="new_project_date">
             <button onclick="createProject()">រក្សាទុក</button>
         </div>
+        
         <div id="project-list"></div>
     </div>
     <div id="task-view" style="display:none;">
@@ -155,11 +209,20 @@
             });
 
             const card = document.createElement('div');
-            card.className = 'project-card';
-            card.onclick = () => openProject(p.id);
+            card.className = 'project-card';            
             card.innerHTML = `
-                <h3>Sub: ${p.id}</h3>
-                <p>កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
+                    <h3 style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        Sub: ${p.id}
+                    </h3>
+                    <button onclick="openProject('${p.id}')" style="padding: 5px 15px; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
+                        Task Table
+                    </button>
+                </div>
+                <p style="margin-top: 10px;">កាលបរិច្ឆេទ: ${p.date || 'N/A'}</p>
+                <table class="project-table">
+                    </table>
+  
                 <table class="project-table"> <thead><tr><th>No</th><th>Desc</th><th>Status</th></tr></thead>
                     <tbody>
                         ${tasks.map(t => `

@@ -7,7 +7,9 @@
     <style>
         /* រចនាប័ទ្មមូលដ្ឋាន */
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f7f6; margin: 0; padding: 10px; }
-        .container { width: 95%; max-width: 1200px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }       
+        .container { width: 95%; max-width: 1200px; margin: auto; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow-x: hidden; /* បិទការរុញផ្ដេកទាំងស្រុងនៅកម្រិត container */
+        }      
 
         /* ការកំណត់ទូទៅសម្រាប់តារាង */
 
@@ -67,6 +69,15 @@
             border-radius: 4px;
             cursor: pointer;
             white-space: nowrap;   /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
+        }
+
+        /* ដំណោះស្រាយតារាងក្នុងកាត */
+        .project-table {
+            display: block; /* ធ្វើឱ្យតារាងជា block ដើម្បីគ្រប់គ្រង overflow */
+            width: 100%;
+            overflow-x: auto; /* អនុញ្ញាតឱ្យរុញផ្ដេកតែក្នុងតារាង */
+            white-space: nowrap; /* ការពារកុំឱ្យអក្សរដាច់ជួរ */
+            -webkit-overflow-scrolling: touch; /* ឱ្យរលូនលើទូរសព្ទ */
         }
         /* Container for alignment */
         .header-container { 
