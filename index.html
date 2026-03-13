@@ -35,7 +35,12 @@
             width: 140px;
             white-space: nowrap;
         }
-        #task-view table th:nth-child(2) { width: auto; }
+        /* #task-view table th:nth-child(2) { width: auto; } */
+        #task-view table th:nth-child(2), 
+        #task-view table td:nth-child(2) {
+            min-width: 200px; /* ប្ដូរពីតម្លៃដើមមកជា 200px ឬធំជាងនេះតាមតម្រូវការ */
+            word-break: break-word;
+        }
 
 
         /* ធាតុ Form និងប៊ូតុង */
