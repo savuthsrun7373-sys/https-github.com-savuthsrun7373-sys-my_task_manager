@@ -66,7 +66,7 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            white-space: nowrap;   /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
+            /*white-space: nowrap;   /* ធានាថាអក្សរក្នុងប៊ូតុងមិនដាច់ជួរ */
         }
 
         /* ដំណោះស្រាយតារាងក្នុងកាត */
@@ -221,7 +221,14 @@
             card.className = 'project-card';            
             card.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px;">
-                    <h3 style="margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <h3 style="
+                        margin: 0; 
+                        overflow: hidden;           /* កុំឱ្យបង្ហាញអក្សរដែលលើស */
+                        text-overflow: ellipsis;    /* បង្ហាញជាសញ្ញា ... បើអក្សរវែងពេក */
+                        white-space: nowrap;        /* មិនឱ្យចុះបន្ទាត់ */
+                        flex: 1;                    /* ឱ្យអក្សរប្រើប្រាស់ទំហំដែលសល់តែប៉ុណ្ណោះ */
+                        min-width: 0;               /* សំខាន់៖ ជួយឱ្យ flex ដំណើរការបានល្អជាមួយ ellipsis */
+                    ">
                         Sub: ${p.id}
                     </h3>
                     <button onclick="openProject('${p.id}')" style="padding: 5px 15px; cursor: pointer; white-space: nowrap; flex-shrink: 0;">
